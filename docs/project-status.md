@@ -24,24 +24,24 @@
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| 1.1 | Scaffold Tauri v2 + SvelteKit project | ⬜ | `npm create tauri-app@latest` with sveltekit-ts template |
-| 1.2 | Install frontend dependencies | ⬜ | tailwindcss, @tailwindcss/vite, vitest, @testing-library/svelte, @testing-library/user-event, @testing-library/jest-dom |
-| 1.3 | Configure TypeScript strict mode | ⬜ | `strict: true` in tsconfig.json |
-| 1.4 | Configure ESLint + Prettier + svelte-check | ⬜ | With custom rule messages for module boundary violations |
-| 1.5 | Configure Tailwind CSS | ⬜ | Dark mode default, integrate with Vite |
-| 1.6 | Set up Vitest with svelteTesting plugin | ⬜ | Add svelteTesting to vite.config.ts |
-| 1.7 | Create feature folder structure | ⬜ | `features/counter`, `features/exercises`, `features/history`, `features/settings`, `shared/` |
-| 1.8 | Create shared type files | ⬜ | exercise.ts, workout.ts, settings.ts, common.ts in shared/types/ |
-| 1.9 | Create Rust module structure | ⬜ | commands/, models/, repo/, db/ with mod.rs files |
-| 1.10 | Create Rust model structs | ⬜ | Matching TypeScript types with serde camelCase |
-| 1.11 | Add Rust test feature flag | ⬜ | `tauri = { features = ["test"] }` in Cargo.toml |
-| 1.12 | Write first serialization test | ⬜ | Verify Rust models serialize to camelCase matching TypeScript |
-| 1.13 | Set up database schema | ⬜ | SQLite tables for workouts, sets, exercises, settings |
-| 1.14 | Verify all sensors pass | ⬜ | svelte-check ✓, eslint ✓, vitest ✓, cargo check ✓, cargo test ✓, cargo clippy ✓ |
-| 1.15 | Place .claude/AGENTS.md | ⬜ | Copy from docs, verify Claude Code reads it |
-| 1.16 | Place .claude/settings.json | ⬜ | Pre-approve sensor commands |
-| 1.17 | Place .claude/commands/ | ⬜ | review.md, test.md, status.md, next.md |
-| 1.18 | Place docs/ui-spec.md | ⬜ | Copy from docs |
+| 1.1 | Scaffold Tauri v2 + SvelteKit project | ✅ | Used `npx sv create` + `npx tauri init` (sveltekit-ts template deprecated) |
+| 1.2 | Install frontend dependencies | ✅ | tailwindcss, @tailwindcss/vite, vitest, @testing-library/svelte, @testing-library/user-event, @testing-library/jest-dom, jsdom |
+| 1.3 | Configure TypeScript strict mode | ✅ | strict, noImplicitAny, noUnusedLocals, noUnusedParameters all set |
+| 1.4 | Configure ESLint + Prettier + svelte-check | ✅ | eslint.config.js with svelte + ts + no-restricted-imports rule; prettier installed |
+| 1.5 | Configure Tailwind CSS | ✅ | @tailwindcss/vite in vite.config.ts; app.css imported in +layout.svelte |
+| 1.6 | Set up Vitest with svelteTesting plugin | ✅ | svelteTesting in plugins; jsdom env; test-setup.ts with jest-dom matchers |
+| 1.7 | Create feature folder structure | ✅ | All features/, shared/, Rust module dirs created |
+| 1.8 | Create shared type files | ✅ | exercise.ts, workout.ts, settings.ts, common.ts in shared/types/ |
+| 1.9 | Create Rust module structure | ✅ | commands/, models/, repo/, db/ with mod.rs files wired into lib.rs |
+| 1.10 | Create Rust model structs | ✅ | WorkoutSet, Workout, Exercise, UserSettings with serde camelCase |
+| 1.11 | Add Rust test feature flag | ✅ | tauri = { features = ["test"] }, rusqlite (bundled), uuid added to Cargo.toml |
+| 1.12 | Write first serialization test | 🔄 | 7 TS type smoke tests pass; Rust serialization + schema tests written, not yet run (cargo not in bash PATH) |
+| 1.13 | Set up database schema | ✅ | initialize_db() in db/mod.rs creates 4 tables |
+| 1.14 | Verify all sensors pass | 🔄 | svelte-check ✅ eslint ✅ vitest ✅ (7/7) — cargo pending (resolve PATH next session) |
+| 1.15 | Place .claude/AGENTS.md | ✅ | Pre-existing |
+| 1.16 | Place .claude/settings.json | ⬜ | Not yet created |
+| 1.17 | Place .claude/commands/ | ⬜ | Not yet created (skills handle /review /test /status /next) |
+| 1.18 | Place docs/ui-spec.md | ✅ | Pre-existing |
 
 **Phase 1 exit criteria**: Every sensor passes clean. `npm run dev` launches the app (blank screen is fine). `cargo test` passes with at least one serialization test. All harness files are in place.
 
@@ -157,6 +157,7 @@
 | Milestone | Date | Notes |
 |---|---|---|
 | Harness plan created | 2026-04-08 | AGENTS.md, ui-spec.md, project-status.md |
+| Phase 1 scaffold complete | 2026-04-09 | SvelteKit + Tauri wired; all TS sensors green; Rust code written, cargo run pending |
 
 ---
 
@@ -176,4 +177,6 @@
 
 | Date | What changed | Why |
 |---|---|---|
-| (none yet) | | |
+| 2026-04-09 | Used `npx sv create` instead of `npm create tauri-app` with sveltekit-ts | sveltekit-ts template removed from create-tauri-app; sv create is now canonical SvelteKit scaffolder |
+| 2026-04-09 | vitest config uses `vitest/config` defineConfig, not `vite` | vite's defineConfig doesn't include the `test` key in its type; must use vitest's export |
+| 2026-04-09 | test-setup.ts uses `expect.extend(matchers)` pattern, not bare `import '@testing-library/jest-dom'` | jest-dom bare import calls `expect` before vitest defines it globally; extend pattern avoids the timing issue |
