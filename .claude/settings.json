@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "npx svelte-check",
+      "npx eslint src/",
+      "npx prettier --check src/",
+      "npx vitest run",
+      "cargo check",
+      "cargo test",
+      "cargo clippy",
+      "npm run dev",
+      "npm run build"
+    ]
+  }
+}
