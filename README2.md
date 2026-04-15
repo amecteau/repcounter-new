@@ -64,7 +64,7 @@ cd src-tauri && cargo check && cargo test && cargo clippy
 ### Running the app (host terminal, outside container)
 ```bash
 npm install          # first time only
-cargo tauri dev
+npx tauri dev        # builds frontend + Rust and opens the window
 ```
 
 ---

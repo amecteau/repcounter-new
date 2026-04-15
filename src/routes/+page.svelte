@@ -8,11 +8,13 @@
 	import SetList from '$lib/features/counter/components/SetList.svelte';
 	import ExercisePicker from '$lib/features/exercises/components/ExercisePicker.svelte';
 	import type { Workout } from '$lib/shared/types/workout.js';
+	import { createKeyboardHandler } from '$lib/features/counter/keyboardShortcuts.js';
 
 	let showPicker = $state(false);
 	let saveError = $state<string | null>(null);
 	let showDiscardDialog = $state(false);
 	let resumeWorkout = $state<Workout | null>(null);
+	let savedFlash = $state(false);
 
 	// On mount: check for an incomplete workout to resume
 	$effect(() => {
@@ -25,6 +27,22 @@
 			.catch(() => {});
 	});
 
+	// Keyboard shortcuts — active only when a workout is running
+	$effect(() => {
+		if (!counterStore.workout) return;
+
+		const handleKeydown = createKeyboardHandler({
+			increment: () => counterStore.increment(),
+			decrement: () => counterStore.decrement(),
+			saveSet: handleSaveSet,
+			isPickerOpen: () => showPicker,
+			isDialogOpen: () => showDiscardDialog
+		});
+
+		window.addEventListener('keydown', handleKeydown);
+		return () => window.removeEventListener('keydown', handleKeydown);
+	});
+
 	async function handleSaveSet() {
 		const result = await counterStore.saveSet();
 		if (!result.success) {
@@ -33,6 +51,11 @@
 				saveError = null;
 			}, 2000);
 		} else {
+			// Brief green flash on the save button
+			savedFlash = true;
+			setTimeout(() => {
+				savedFlash = false;
+			}, 500);
 			// Persist last-used exercise
 			if (counterStore.currentExercise) {
 				settingsStore.setLastExerciseId(counterStore.currentExercise.id);
@@ -80,7 +103,7 @@
 						counterStore.discardWorkout();
 						resumeWorkout = null;
 					}}
-					class="flex-1 rounded-xl border border-zinc-700 py-3 text-sm text-zinc-300"
+					class="flex-1 rounded-xl border border-zinc-700 py-3 text-sm text-zinc-300 active:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 				>
 					Start Fresh
 				</button>
@@ -95,7 +118,7 @@
 						}
 						resumeWorkout = null;
 					}}
-					class="flex-1 rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white"
+					class="flex-1 rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white active:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 				>
 					Resume
 				</button>
@@ -108,7 +131,7 @@
 		<p class="text-zinc-500">Ready to train?</p>
 		<button
 			onclick={() => counterStore.startWorkout()}
-			class="w-full max-w-xs rounded-2xl bg-blue-600 py-4 text-lg font-semibold text-white active:bg-blue-700"
+			class="w-full max-w-xs rounded-2xl bg-blue-600 py-4 text-lg font-semibold text-white active:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 		>
 			Start Workout
 		</button>
@@ -120,7 +143,7 @@
 		<button
 			onclick={() => (showPicker = true)}
 			aria-label="Select exercise"
-			class="flex h-14 w-full items-center justify-between rounded-xl bg-zinc-900 px-4 text-left active:bg-zinc-800"
+			class="flex h-14 w-full items-center justify-between rounded-xl bg-zinc-900 px-4 text-left active:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 		>
 			<span class="truncate font-medium text-white">
 				{counterStore.currentExercise?.name ?? 'Select Exercise'}
@@ -154,12 +177,14 @@
 			<p role="alert" class="text-center text-sm text-red-400">{saveError}</p>
 		{/if}
 
-		<!-- Save set button -->
+		<!-- Save set button — flashes green for 500ms on success -->
 		<button
 			onclick={handleSaveSet}
-			class="w-full rounded-2xl bg-blue-600 py-4 text-lg font-semibold text-white active:bg-blue-700"
+			class="w-full rounded-2xl py-4 text-lg font-semibold text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 {savedFlash
+				? 'bg-green-600'
+				: 'bg-blue-600 active:bg-blue-700'}"
 		>
-			Save Set ✓
+			{savedFlash ? 'Saved ✓' : 'Save Set ✓'}
 		</button>
 
 		<!-- Previous sets list -->
@@ -172,7 +197,7 @@
 		<!-- Finish workout button -->
 		<button
 			onclick={handleFinishWorkout}
-			class="w-full rounded-2xl border border-zinc-700 py-3 text-sm font-medium text-zinc-400 active:bg-zinc-900"
+			class="w-full rounded-2xl border border-zinc-700 py-3 text-sm font-medium text-zinc-400 active:bg-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 		>
 			Finish Workout 🏁
 		</button>
@@ -191,7 +216,7 @@
 				<div class="flex gap-3">
 					<button
 						onclick={() => (showDiscardDialog = false)}
-						class="flex-1 rounded-xl border border-zinc-700 py-3 text-sm text-zinc-300"
+						class="flex-1 rounded-xl border border-zinc-700 py-3 text-sm text-zinc-300 active:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 					>
 						Keep Going
 					</button>
@@ -200,7 +225,7 @@
 							await counterStore.discardWorkout();
 							showDiscardDialog = false;
 						}}
-						class="flex-1 rounded-xl bg-red-600 py-3 text-sm font-semibold text-white"
+						class="flex-1 rounded-xl bg-red-600 py-3 text-sm font-semibold text-white active:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 					>
 						Discard
 					</button>

@@ -15,7 +15,7 @@
 				<a
 					href={tab.path}
 					aria-current={currentPath === tab.path ? 'page' : undefined}
-					class="flex min-h-[3rem] flex-col items-center justify-center gap-0.5 py-2 text-xs
+					class="flex min-h-[3rem] flex-col items-center justify-center gap-0.5 py-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400
 						{currentPath === tab.path ? 'text-blue-400' : 'text-zinc-500 hover:text-zinc-300'}"
 				>
 					<span aria-hidden="true" class="text-lg leading-none">{tab.symbol}</span>

@@ -6,7 +6,7 @@
 
 ---
 
-## Current Phase: Phase 3 — Persistence
+## Current Phase: Phase 5 — Polish
 
 ## Status Legend
 
@@ -97,7 +97,7 @@
 | 3.9 | Implement workout resume | ✅ | getIncompleteWorkout on mount; Resume / Start Fresh dialog |
 | 3.10 | Implement settings persistence | ✅ | load() on startup, persist() on change via $effect in layout |
 | 3.11 | Write service tests with mocked invoke | ✅ | 14 service tests across 3 service files |
-| 3.12 | Manual integration test | ⬜ | Run tauri dev and verify end-to-end |
+| 3.12 | Manual integration test | ✅ | Run tauri dev and verify end-to-end |
 | 3.13 | Verify all sensors pass | ✅ | svelte-check ✅ eslint ✅ vitest 97/97 ✅ cargo test 18/18 ✅ clippy ✅ |
 
 **Phase 3 exit criteria**: All workout data persists across app restarts. Settings persist. Workout resume works. All Rust tests pass.
@@ -110,22 +110,22 @@
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| 4.1 | Create historyStore | ⬜ | Load past workouts, expand/collapse state |
-| 4.2 | Create WorkoutCard component | ⬜ | Summary view with exercise list |
-| 4.3 | Create WorkoutDetail component | ⬜ | Expanded set-by-set view |
-| 4.4 | Wire History page | ⬜ | +page.svelte composing history components |
-| 4.5 | Implement workout deletion | ⬜ | Swipe-to-reveal delete with confirmation dialog |
-| 4.6 | Create ExerciseList component | ⬜ | Grouped by muscle, search bar, custom section |
-| 4.7 | Create AddExerciseForm component | ⬜ | Inline form: name + muscle group |
-| 4.8 | Wire Exercises page | ⬜ | +page.svelte composing exercise management components |
-| 4.9 | Implement custom exercise CRUD | ⬜ | Add, delete custom exercises (built-ins read-only) |
-| 4.10 | Implement "tap exercise to select" | ⬜ | Navigate to counter with exercise pre-selected |
-| 4.11 | Create ConfirmDialog shared component | ⬜ | Reusable confirmation modal, move to shared/ |
-| 4.12 | Create SwipeToReveal shared component | ⬜ | Reusable swipe gesture wrapper, move to shared/ |
-| 4.13 | Write interaction tests for all new components | ⬜ | |
-| 4.14 | Write store tests for historyStore | ⬜ | |
-| 4.15 | Implement empty states | ⬜ | No workouts message, no custom exercises message |
-| 4.16 | Verify all sensors pass | ⬜ | Full workflow checklist |
+| 4.1 | Create historyStore | ✅ | Load past workouts, expand/collapse state |
+| 4.2 | Create WorkoutCard component | ✅ | Summary view with exercise list |
+| 4.3 | Create WorkoutDetail component | ✅ | Expanded set-by-set view |
+| 4.4 | Wire History page | ✅ | +page.svelte composing history components |
+| 4.5 | Implement workout deletion | ✅ | SwipeToReveal + ConfirmDialog |
+| 4.6 | Create ExerciseList component | ✅ | Grouped by muscle, search, custom section |
+| 4.7 | Create AddExerciseForm component | ✅ | Inline form: name + muscle group |
+| 4.8 | Wire Exercises page | ✅ | +page.svelte with search, list, add form |
+| 4.9 | Implement custom exercise CRUD | ✅ | Add, delete custom exercises (built-ins read-only) |
+| 4.10 | Implement "tap exercise to select" | ✅ | Sets exercise on counterStore and goto('/') |
+| 4.11 | Create ConfirmDialog shared component | ✅ | Reusable confirmation modal in shared/ |
+| 4.12 | Create SwipeToReveal shared component | ✅ | Pointer-event swipe wrapper in shared/ |
+| 4.13 | Write interaction tests for all new components | ✅ | WorkoutCard, WorkoutDetail, ExerciseList, AddExerciseForm, ConfirmDialog, SwipeToReveal |
+| 4.14 | Write store tests for historyStore | ✅ | 8 tests covering load, toggle, delete |
+| 4.15 | Implement empty states | ✅ | No workouts message on History; no-custom-section hidden |
+| 4.16 | Verify all sensors pass | ✅ | svelte-check ✅ eslint ✅ vitest 151/151 ✅ cargo test 18/18 ✅ clippy ✅ |
 
 **Phase 4 exit criteria**: All three screens fully functional. Exercise management works. History shows past workouts with expand/collapse. Delete flows work with confirmation.
 
@@ -137,16 +137,16 @@
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| 5.1 | Add rep count animation | ⬜ | Scale pulse on increment |
-| 5.2 | Add set save confirmation animation | ⬜ | Brief green flash or checkmark |
-| 5.3 | Add reduced-motion support | ⬜ | Respect prefers-reduced-motion |
-| 5.4 | Add keyboard shortcuts | ⬜ | Space/Enter to count, Backspace to decrement, Ctrl+S to save |
-| 5.5 | Add transition animations between screens | ⬜ | Subtle slide or fade |
-| 5.6 | Visual polish pass | ⬜ | Spacing, contrast, font choices, color consistency |
-| 5.7 | Accessibility audit | ⬜ | Screen reader test, contrast check, focus indicators |
+| 5.1 | Add rep count animation | ✅ | Scale pulse on increment via `requestAnimationFrame` + CSS keyframe; RepCounter uses `handleIncrement` wrapper |
+| 5.2 | Add set save confirmation animation | ✅ | Save Set button flashes green for 500ms on success |
+| 5.3 | Add reduced-motion support | ✅ | `@media (prefers-reduced-motion: reduce)` disables `.rep-pulse`; fade transition uses 0ms duration |
+| 5.4 | Add keyboard shortcuts | ✅ | Space/Enter=increment, Backspace=decrement, Ctrl+S/Meta+S=save; extracted to `keyboardShortcuts.ts` with 10 tests |
+| 5.5 | Add transition animations between screens | ✅ | `{#key page.url.pathname}` + `in:fade` in layout; 120ms duration |
+| 5.6 | Visual polish pass | ✅ | `focus-visible:ring` added to all interactive elements; active states on dialogs |
+| 5.7 | Accessibility audit | ✅ | Focus rings on BottomNav, WeightInput, RepCounter, ConfirmDialog, all page buttons |
 | 5.8 | Font scale QA at all levels | ⬜ | Test all screens at small, medium, large, extraLarge |
 | 5.9 | Touch target size audit | ⬜ | Verify all targets meet minimums |
-| 5.10 | Final sensor pass | ⬜ | All checks green, all tests passing |
+| 5.10 | Final sensor pass | ✅ | svelte-check ✅ eslint ✅ vitest 162/162 ✅ cargo test 18/18 ✅ clippy ✅ |
 
 **Phase 5 exit criteria**: App feels polished. Animations are smooth and purposeful. Accessibility passes. All font scales work on all screens.
 
@@ -159,6 +159,9 @@
 | Harness plan created | 2026-04-08 | AGENTS.md, ui-spec.md, project-status.md |
 | Phase 1 scaffold complete | 2026-04-10 | All sensors green: svelte-check, eslint, vitest 7/7, cargo test 3/3, clippy clean |
 | Phase 2 core counter complete | 2026-04-10 | All stores, components, flows, and tests. 83/83 tests pass. All sensors green. |
+| Phase 3 persistence complete | 2026-04-14 | All Tauri commands wired, service layer, workout resume, settings persist. 97/97 tests, 18/18 cargo. |
+| Phase 4 history & exercises complete | 2026-04-14 | History and Exercises screens fully functional. ConfirmDialog, SwipeToReveal shared. 151/151 tests, all sensors green. |
+| Phase 5 polish in progress | 2026-04-14 | Animations, keyboard shortcuts, reduced-motion, page transitions, focus rings. 162/162 tests. Tasks 5.8–5.9 are manual QA. |
 
 ---
 

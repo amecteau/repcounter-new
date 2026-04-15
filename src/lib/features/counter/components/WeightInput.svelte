@@ -28,7 +28,7 @@
 		<button
 			onclick={() => onAdjust(-step)}
 			aria-label={`-${step}`}
-			class="flex h-12 w-16 items-center justify-center rounded-lg bg-zinc-800 text-sm font-medium text-white active:bg-zinc-700"
+			class="flex h-12 w-16 items-center justify-center rounded-lg bg-zinc-800 text-sm font-medium text-white active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 		>
 			−{step}
 		</button>
@@ -46,7 +46,7 @@
 		<button
 			onclick={() => onAdjust(step)}
 			aria-label={`+${step}`}
-			class="flex h-12 w-16 items-center justify-center rounded-lg bg-zinc-800 text-sm font-medium text-white active:bg-zinc-700"
+			class="flex h-12 w-16 items-center justify-center rounded-lg bg-zinc-800 text-sm font-medium text-white active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 		>
 			+{step}
 		</button>
@@ -55,7 +55,7 @@
 	<button
 		onclick={() => onUnitChange(unit === 'lb' ? 'kg' : 'lb')}
 		aria-label={`Unit: ${unit}, tap to toggle`}
-		class="mx-auto flex h-9 items-center gap-1 rounded-full bg-zinc-800 px-4 text-sm text-zinc-300 active:bg-zinc-700"
+		class="mx-auto flex h-9 items-center gap-1 rounded-full bg-zinc-800 px-4 text-sm text-zinc-300 active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 	>
 		{unit} ▾
 	</button>

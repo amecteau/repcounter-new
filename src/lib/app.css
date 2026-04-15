@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+@keyframes rep-pulse {
+	0% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(1.18);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.rep-pulse {
+	animation: rep-pulse 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rep-pulse {
+		animation: none;
+	}
+}

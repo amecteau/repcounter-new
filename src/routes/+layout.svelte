@@ -1,11 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { fade } from 'svelte/transition';
 	import '$lib/app.css';
 	import BottomNav from '$lib/shared/components/BottomNav.svelte';
 	import FontScaleControl from '$lib/features/settings/components/FontScaleControl.svelte';
 	import { settingsStore } from '$lib/features/settings/settingsStore.svelte.js';
 	import { exerciseStore } from '$lib/features/exercises/exerciseStore.svelte.js';
 	import favicon from '$lib/assets/favicon.svg';
+
+	// Respect prefers-reduced-motion — skip transition if user has opted out
+	const fadeDuration =
+		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+			? 0
+			: 120;
 
 	let { children } = $props();
 
@@ -43,9 +50,13 @@
 		/>
 	</header>
 
-	<!-- Scrollable content area -->
+	<!-- Scrollable content area — keyed by route so fade runs on navigation -->
 	<main class="flex-1 overflow-y-auto">
-		{@render children()}
+		{#key page.url.pathname}
+			<div in:fade={{ duration: fadeDuration }} class="h-full">
+				{@render children()}
+			</div>
+		{/key}
 	</main>
 
 	<!-- Bottom navigation -->

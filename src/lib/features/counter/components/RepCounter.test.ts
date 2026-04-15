@@ -46,4 +46,13 @@ describe('RepCounter', () => {
 		render(RepCounter, { repCount: 0, onIncrement: vi.fn(), onDecrement: vi.fn() });
 		expect(screen.getByRole('status')).toHaveTextContent('0');
 	});
+
+	it('tap area and + button both trigger increment', async () => {
+		const user = userEvent.setup();
+		const onIncrement = vi.fn();
+		render(RepCounter, { repCount: 0, onIncrement, onDecrement: vi.fn() });
+		await user.click(screen.getByRole('button', { name: /tap to count/i }));
+		await user.click(screen.getByRole('button', { name: /increment/i }));
+		expect(onIncrement).toHaveBeenCalledTimes(2);
+	});
 });

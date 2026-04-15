@@ -39,7 +39,9 @@ pub fn save_set(conn: &Connection, workout_id: &str, set: &WorkoutSet) -> Result
 pub fn get_workouts(conn: &Connection) -> Result<Vec<Workout>> {
     // Fetch all workouts ordered newest first
     let mut w_stmt = conn.prepare(
-        "SELECT id, date, duration_minutes FROM workouts ORDER BY date DESC",
+        "SELECT id, date, duration_minutes FROM workouts
+         WHERE duration_minutes IS NOT NULL AND duration_minutes > 0
+         ORDER BY date DESC",
     )?;
     let workout_rows: Vec<(String, String, Option<i64>)> = w_stmt
         .query_map([], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))?
@@ -155,11 +157,12 @@ mod tests {
     fn save_and_retrieve_workout() {
         let conn = setup();
         save_workout(&conn, "w1", "2026-04-10").expect("save workout");
+        finish_workout(&conn, "w1", 45).expect("finish workout");
         let workouts = get_workouts(&conn).expect("get workouts");
         assert_eq!(workouts.len(), 1);
         assert_eq!(workouts[0].id, "w1");
         assert_eq!(workouts[0].date, "2026-04-10");
-        assert!(workouts[0].duration_minutes.is_none());
+        assert_eq!(workouts[0].duration_minutes, Some(45));
         assert!(workouts[0].sets.is_empty());
     }
 
@@ -169,6 +172,7 @@ mod tests {
         save_workout(&conn, "w1", "2026-04-10").expect("save workout");
         let set = make_set("s1", "bench-press");
         save_set(&conn, "w1", &set).expect("save set");
+        finish_workout(&conn, "w1", 30).expect("finish workout");
         let workouts = get_workouts(&conn).expect("get workouts");
         assert_eq!(workouts[0].sets.len(), 1);
         assert_eq!(workouts[0].sets[0].reps, 10);
@@ -227,6 +231,7 @@ mod tests {
         s2.reps = 8;
         save_set(&conn, "w1", &s1).expect("save s1");
         save_set(&conn, "w1", &s2).expect("save s2");
+        finish_workout(&conn, "w1", 60).expect("finish workout");
         let workouts = get_workouts(&conn).expect("get");
         assert_eq!(workouts[0].sets.len(), 2);
         assert_eq!(workouts[0].sets[0].reps, 10);
