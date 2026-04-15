@@ -28,7 +28,7 @@
 		<button
 			onclick={() => onAdjust(-step)}
 			aria-label={`-${step}`}
-			class="flex h-12 w-16 items-center justify-center rounded-lg bg-zinc-800 text-sm font-medium text-white active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+			class="flex h-[3.75rem] w-20 items-center justify-center rounded-lg bg-zinc-800 text-base font-medium text-white active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 		>
 			−{step}
 		</button>
@@ -39,24 +39,24 @@
 			value={weight ?? ''}
 			oninput={handleInput}
 			aria-label="Weight"
-			placeholder="Weight"
-			class="h-12 flex-1 rounded-lg bg-zinc-800 px-3 text-center text-lg text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+			placeholder="—"
+			class="h-[3.75rem] min-w-0 flex-1 rounded-lg bg-zinc-800 px-2 text-center text-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
 		/>
+
+		<button
+			onclick={() => onUnitChange(unit === 'lb' ? 'kg' : 'lb')}
+			aria-label={`Unit: ${unit}, tap to toggle`}
+			class="flex h-[3.75rem] w-14 items-center justify-center rounded-lg bg-zinc-700 text-base font-medium text-zinc-200 active:bg-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+		>
+			{unit}
+		</button>
 
 		<button
 			onclick={() => onAdjust(step)}
 			aria-label={`+${step}`}
-			class="flex h-12 w-16 items-center justify-center rounded-lg bg-zinc-800 text-sm font-medium text-white active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+			class="flex h-[3.75rem] w-20 items-center justify-center rounded-lg bg-zinc-800 text-base font-medium text-white active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 		>
 			+{step}
 		</button>
 	</div>
-
-	<button
-		onclick={() => onUnitChange(unit === 'lb' ? 'kg' : 'lb')}
-		aria-label={`Unit: ${unit}, tap to toggle`}
-		class="mx-auto flex h-9 items-center gap-1 rounded-full bg-zinc-800 px-4 text-sm text-zinc-300 active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
-	>
-		{unit} ▾
-	</button>
 </div>

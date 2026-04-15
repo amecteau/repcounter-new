@@ -36,7 +36,7 @@
 		aria-label="Tap to count"
 		class="flex min-h-[11rem] w-full items-center justify-center rounded-2xl bg-zinc-900 active:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 	>
-		<span aria-hidden="true" class="text-[7rem] font-bold leading-none text-blue-400 {pulsing ? 'rep-pulse' : ''}">
+		<span aria-hidden="true" class="text-[5.5rem] font-bold leading-none text-blue-400 {pulsing ? 'rep-pulse' : ''}">
 			{repCount}
 		</span>
 	</button>
