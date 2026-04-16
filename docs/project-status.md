@@ -181,16 +181,17 @@ Workflow runs on `v*` tag push only. To release: `git tag v0.1.0 && git push ori
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| 6.1 | Fix `tauri.conf.json` identifier | ⬜ | Change `com.tauri.dev` → real reverse-domain (e.g. `io.github.amecteau.repcounter`). Must be done before Android init — Android uses this as the package name. |
-| 6.2 | Initialize Tauri Android target | ⬜ | Run `npx tauri android init` locally. Generates `src-tauri/gen/android/`. Commit the generated files. |
-| 6.3 | Add Android Rust targets | ⬜ | Add `aarch64-linux-android`, `armv7-linux-androideabi`, `i686-linux-android`, `x86_64-linux-android` to `rust-toolchain.toml` so CI installs them. |
-| 6.4 | Create `.github/workflows/release.yml` | ⬜ | Single workflow file: two parallel build jobs + one release job. Triggers on `v*` tags. |
-| 6.5 | Windows job | ⬜ | `windows-latest`: checkout → Node → Rust stable → `npm ci` → `npx tauri build` → upload `.msi` + `.exe`. |
-| 6.6 | Android job | ⬜ | `ubuntu-latest`: checkout → Node → Java 17 → Android SDK → Rust + Android targets → `npm ci` → `npx tauri android build --apk` → upload `.apk`. |
-| 6.7 | Release job | ⬜ | Depends on both build jobs. Downloads all artifacts, uses `softprops/action-gh-release` to publish release with files attached. |
-| 6.8 | Version sync script | ⬜ | Small script so `npm version patch/minor/major` also updates `tauri.conf.json` version field, keeping tag and app version in sync. |
-| 6.9 | Test workflow end-to-end | ⬜ | Push `v0.1.0` tag. Verify both artifacts appear on GitHub Releases page. |
-| 6.10 | Add release badge to README | ⬜ | One-line markdown badge linking to latest release so users can find the download from the repo home page. |
+| 6.1 | Fix `tauri.conf.json` identifier | ✅ | Changed `com.tauri.dev` → `io.github.amecteau.repcounter`. |
+| 6.2 | ~~Initialize Tauri Android target locally~~ | ✅ | Skipped — Android SDK not installed locally. CI job runs `npx tauri android init` before building instead. |
+| 6.3 | Add Android Rust targets | ✅ | Created `rust-toolchain.toml` with stable channel + 4 Android targets. |
+| 6.4 | Local Windows build test | ⬜ | Run `npx tauri build` locally. Verify `.msi` + `.exe` appear in `src-tauri/target/release/bundle/`. |
+| 6.5 | Create `.github/workflows/release.yml` | ⬜ | Single workflow file: two parallel build jobs + one release job. Triggers on `v*` tags. |
+| 6.6 | Windows CI job | ⬜ | `windows-latest`: checkout → Node → Rust stable → `npm ci` → `npx tauri build` → upload `.msi` + `.exe`. |
+| 6.7 | Android CI job | ⬜ | `ubuntu-latest`: checkout → Node → Java 17 → Android SDK → Rust + Android targets → `npm ci` → `npx tauri android build --apk` → upload `.apk`. Android build verified in CI only. |
+| 6.8 | Release job | ⬜ | Depends on both build jobs. Downloads all artifacts, uses `softprops/action-gh-release` to publish release with files attached. |
+| 6.9 | Version sync script | ⬜ | Small script so `npm version patch/minor/major` also updates `tauri.conf.json` version field, keeping tag and app version in sync. |
+| 6.10 | Test workflow end-to-end | ⬜ | Push `v0.1.0` tag. Verify both artifacts appear on GitHub Releases page. |
+| 6.11 | Add release badge to README | ⬜ | One-line markdown badge linking to latest release so users can find the download from the repo home page. |
 
 **Phase 6 exit criteria**: Pushing a `v*` tag produces a GitHub Release with a Windows installer and Android APK attached, downloadable via a public link on the repo Releases page.
 
