@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Rep Counter",
+  "productName": "SetForge",
   "version": "0.0.1",
-  "identifier": "io.github.amecteau.repcounter",
+  "identifier": "io.github.amecteau.setforge",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:5173",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Rep Counter",
+        "title": "SetForge",
         "width": 800,
         "height": 600,
         "resizable": true,
