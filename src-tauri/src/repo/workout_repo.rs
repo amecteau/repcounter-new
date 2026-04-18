@@ -133,11 +133,11 @@ pub fn delete_workout(conn: &Connection, id: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::db::initialize_db;
+    use crate::db::migrate_db;
 
     fn setup() -> Connection {
         let conn = Connection::open_in_memory().expect("in-memory db");
-        initialize_db(&conn).expect("schema");
+        migrate_db(&conn).expect("schema");
         conn
     }
 

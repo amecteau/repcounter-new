@@ -199,6 +199,71 @@ Workflow runs on `v*` tag push only. To release: `git tag v0.1.0 && git push ori
 
 ---
 
+## Phase 7: Data Safety
+
+> **Goal**: Ensure user data survives app upgrades indefinitely. Introduce a versioned migration system so future schema changes are applied automatically and safely when the app starts.
+
+### Design
+
+The migration system lives entirely in `src-tauri/src/db/mod.rs`. No new dependencies are required.
+
+**`schema_version` table** — a single-row table tracking which migrations have been applied:
+```sql
+CREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL DEFAULT 0);
+```
+
+**`MIGRATIONS` constant** — a static, append-only list of `(version, sql)` pairs. Each entry is a complete SQL statement that advances the schema by one version. Never edit an existing entry; only append new ones.
+
+```rust
+const MIGRATIONS: &[(u32, &str)] = &[
+    (1, "CREATE TABLE IF NOT EXISTS workouts (...)"),
+    (1, "CREATE TABLE IF NOT EXISTS sets (...)"),
+    // future: (2, "ALTER TABLE sets ADD COLUMN ...")
+];
+```
+
+**`migrate_db(&conn)`** — replaces `initialize_db()` in the Tauri startup hook:
+1. Creates `schema_version` if it does not exist (handles fresh installs and existing v0 installs alike).
+2. Reads the current version (0 if the table is empty).
+3. Collects all migrations with version > current version, in order.
+4. Runs each migration in its own transaction. On failure, the transaction rolls back and an error is returned — the app does not start with a half-migrated DB.
+5. After each successful migration, updates `schema_version` to the new version.
+
+**Existing installs** — the 4 current tables already exist. Migration 1 uses `CREATE TABLE IF NOT EXISTS`, so running it on an existing DB is a no-op. All user data is preserved.
+
+**Adding future schema changes** — append a new entry to `MIGRATIONS` with the next version number (e.g., version 2). On the user's next app launch, only the new migration runs.
+
+### Files changed
+
+| File | Change |
+|---|---|
+| `src-tauri/src/db/mod.rs` | Replace `initialize_db()` with `migrate_db()` + supporting private functions |
+| `src-tauri/src/lib.rs` | Call `migrate_db()` instead of `initialize_db()` in the Tauri setup hook |
+
+### Tests added (in `db/mod.rs` `#[cfg(test)]` block)
+
+| Test | What it verifies |
+|---|---|
+| `fresh_install_creates_all_tables` | Running migrations on an empty DB creates all 4 tables |
+| `existing_install_skips_applied_migrations` | Set version to 1, add migration 2, verify only migration 2 runs |
+| `version_increments_after_each_migration` | After 2 migrations, `schema_version` reads 2 |
+| `failed_migration_rolls_back_and_returns_error` | Bad SQL in migration 2 leaves version at 1 and returns `Err` |
+| `migrate_is_idempotent` | Running `migrate_db()` twice on the same DB is safe |
+
+### Tasks
+
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 7.1 | Implement `migrate_db()` in `db/mod.rs` | ✅ | Replace `initialize_db()`. Migration 1 = current 4-table schema. |
+| 7.2 | Update `lib.rs` startup hook | ✅ | Call `migrate_db()` instead of `initialize_db()`. Map error to a meaningful panic message so the user sees something useful if the DB is corrupt. |
+| 7.3 | Write Rust migration tests | ✅ | 5 tests in `db::tests`. Updated repo test helpers to use `migrate_db`. 22/22 cargo tests pass. |
+| 7.4 | Update `AGENTS.md` schema rules | ✅ | Replace "No migrations system for v1" note with the new append-only migration convention. |
+| 7.5 | Run full sensor pass | ✅ | svelte-check ✅ eslint ✅ vitest 165/165 ✅ cargo check ✅ cargo test 22/22 ✅ |
+
+**Phase 7 exit criteria**: App startup runs `migrate_db()`. All 5 migration tests pass. Existing DB files (with user data) are left untouched. `AGENTS.md` documents the convention for future schema changes.
+
+---
+
 ## Completed Milestones
 
 | Milestone | Date | Notes |

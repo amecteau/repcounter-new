@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(ls c:/AppDev/repcounter-new/vitest.config.*)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(rustup show *)",
+      "Bash(rustup component *)"
     ]
   }
 }

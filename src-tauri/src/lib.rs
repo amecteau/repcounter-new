@@ -27,7 +27,7 @@ pub fn run() {
             std::fs::create_dir_all(&data_dir)?;
             let db_path = data_dir.join("repcounter.db");
             let conn = Connection::open(&db_path)?;
-            db::initialize_db(&conn)?;
+            db::migrate_db(&conn).map_err(|e| format!("Database migration failed: {e}"))?;
             app.manage(DbConn(Mutex::new(conn)));
 
             Ok(())

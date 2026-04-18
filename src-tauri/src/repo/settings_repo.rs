@@ -53,11 +53,11 @@ pub fn get_settings(conn: &Connection) -> Result<Option<UserSettings>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::db::initialize_db;
+    use crate::db::migrate_db;
 
     fn setup() -> Connection {
         let conn = Connection::open_in_memory().expect("in-memory db");
-        initialize_db(&conn).expect("schema");
+        migrate_db(&conn).expect("schema");
         conn
     }
 
