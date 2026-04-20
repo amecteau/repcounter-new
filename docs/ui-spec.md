@@ -1,4 +1,4 @@
-# Rep Counter — UI Specification
+# SetForge — UI Specification
 
 This document describes every screen, interaction, and user flow in the app. It is the source of truth for what the app should do. If a feature is not described here, do not build it without asking.
 
@@ -32,9 +32,11 @@ This is where the user spends 95% of their time during a workout.
 
 ### Layout
 
+The three most important pieces of information — exercise, weight, and reps — are visible at a glance without scrolling. The previous sets list scrolls off below the fold by design.
+
 ```
 ┌──────────────────────────────┐
-│  [≡ Nav]  Rep Counter [A−A+] │  ← Top bar: nav, title, font scale
+│  SetForge             [A−A+] │  ← Top bar: title, font scale
 ├──────────────────────────────┤
 │                              │
 │  ┌────────────────────────┐  │
@@ -42,28 +44,26 @@ This is where the user spends 95% of their time during a workout.
 │  └────────────────────────┘  │
 │                              │
 │  ┌────────────────────────┐  │
-│  │ [−5] Weight: [135] [+5]│  │  ← Weight with stepper buttons
-│  │         [lb ▼]         │  │     Unit toggle below
+│  │  WEIGHT                │  │  ← Weight card
+│  │                        │  │
+│  │  [−5]    135    [+5]  │  │     −/+ flank the hero number
+│  │           lb           │  │     unit label tappable to toggle
 │  └────────────────────────┘  │
 │                              │
-│          Set 3 of 3          │  ← Current set indicator
-│                              │
-│    ┌──────────────────────┐  │
-│    │                      │  │
-│    │                      │  │
-│    │         12           │  │  ← Giant rep count (main tap target)
-│    │                      │  │     Tap anywhere in this area to +1
-│    │                      │  │
-│    └──────────────────────┘  │
-│                              │
-│    [ − ]              [ + ]  │  ← Visible +/− buttons (always shown)
+│  ┌────────────────────────┐  │
+│  │  REPS          Set 3   │  │  ← Reps card (set number top-right)
+│  │                        │  │
+│  │          12            │  │     Tap anywhere in card to +1
+│  │                        │  │
+│  │   [ − ]        [ + ]  │  │     −/+ buttons inside the card
+│  └────────────────────────┘  │
 │                              │
 │  ┌────────────────────────┐  │
 │  │      Save Set ✓        │  │  ← Full-width save button
 │  └────────────────────────┘  │
 │                              │
-│  ── Previous Sets ────────── │
-│  Set 1: 12 reps @ 135 lb  ← │  ← Swipe left to reveal Undo
+│  ── Previous Sets ────────── │  ← scrolls off below the fold
+│  Set 1: 12 reps @ 135 lb  ← │     swipe left to reveal Undo
 │  Set 2: 10 reps @ 135 lb  ← │
 │                              │
 │  ┌────────────────────────┐  │
@@ -269,7 +269,7 @@ Active tab is highlighted. Tapping Counter always goes to the current workout st
 
 ### Top Bar
 
-- App title: "Rep Counter"
+- App title: "SetForge"
 - Optional hamburger menu for settings (Phase 5+, not in initial build)
 
 ---

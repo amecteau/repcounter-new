@@ -163,14 +163,10 @@
 			onAdjust={(d) => counterStore.adjustWeight(d)}
 		/>
 
-		<!-- Set indicator -->
-		<p class="text-center text-sm text-zinc-500">
-			Set {counterStore.setNumber}
-		</p>
-
 		<!-- Rep counter (main interaction) -->
 		<RepCounter
 			repCount={counterStore.repCount}
+			setNumber={counterStore.setNumber}
 			onIncrement={() => counterStore.increment()}
 			onDecrement={() => counterStore.decrement()}
 		/>

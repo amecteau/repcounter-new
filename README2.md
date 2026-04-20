@@ -1,4 +1,4 @@
-# Dev Container — Gym Rep Counter
+# Dev Container — SetForge
 
 ## What lives where
 

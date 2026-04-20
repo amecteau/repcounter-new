@@ -1,4 +1,4 @@
-# Rep Counter — Claude Code Agent Instructions
+# SetForge — Claude Code Agent Instructions
 
 You are working on a desktop gym rep counter app built with **Tauri v2** (Rust backend) and **SvelteKit** (TypeScript frontend). Read this entire file before making any changes.
 

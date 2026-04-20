@@ -55,4 +55,14 @@ describe('RepCounter', () => {
 		await user.click(screen.getByRole('button', { name: /increment/i }));
 		expect(onIncrement).toHaveBeenCalledTimes(2);
 	});
+
+	it('displays the set number when provided', () => {
+		render(RepCounter, { repCount: 0, setNumber: 3, onIncrement: vi.fn(), onDecrement: vi.fn() });
+		expect(screen.getByText(/set 3/i)).toBeInTheDocument();
+	});
+
+	it('defaults to set 1 when setNumber is not provided', () => {
+		render(RepCounter, { repCount: 0, onIncrement: vi.fn(), onDecrement: vi.fn() });
+		expect(screen.getByText(/set 1/i)).toBeInTheDocument();
+	});
 });

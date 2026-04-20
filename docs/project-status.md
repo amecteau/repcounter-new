@@ -1,4 +1,4 @@
-# Rep Counter — Project Status
+# SetForge — Project Status
 
 > **This file is the single source of truth for project progress.**
 > Claude Code: read this file when the user asks for "status", "where are we", "what's next", or "next".
@@ -184,7 +184,7 @@ Workflow runs on `v*` tag push only. To release: `git tag v0.1.0 && git push ori
 | 6.1 | Fix `tauri.conf.json` identifier | ✅ | Changed `com.tauri.dev` → `io.github.amecteau.repcounter`. |
 | 6.2 | ~~Initialize Tauri Android target locally~~ | ✅ | Skipped — Android SDK not installed locally. CI job runs `npx tauri android init` before building instead. |
 | 6.3 | Add Android Rust targets | ✅ | Created `rust-toolchain.toml` with stable channel + 4 Android targets. |
-| 6.4 | Local Windows build test | ✅ | `Rep Counter_0.1.0_x64_en-US.msi` + `Rep Counter_0.1.0_x64-setup.exe` produced. Fixed adapter-auto → adapter-static (fallback: index.html) required for Tauri static output. |
+| 6.4 | Local Windows build test | ✅ | `SetForge_0.1.0_x64_en-US.msi` + `SetForge_0.1.0_x64-setup.exe` produced. Fixed adapter-auto → adapter-static (fallback: index.html) required for Tauri static output. |
 | 6.5 | Create `.github/workflows/release.yml` | ✅ | Single workflow file with all three jobs. Triggers on `v*` tags. |
 | 6.6 | Windows CI job | ✅ | `windows-latest`: checkout → Node → Rust stable → `npm ci` → `npx tauri build` → upload `.msi` + `.exe`. |
 | 6.7 | Android CI job | ✅ | `ubuntu-latest`: checkout → Node → Java 17 → Android SDK → NDK 27.2 → Rust + 4 targets → `npm ci` → `npx tauri android init` → `npx tauri android build --apk` → upload `.apk`. |

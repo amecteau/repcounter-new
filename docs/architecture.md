@@ -1,4 +1,4 @@
-# Rep Counter — Architecture Overview
+# SetForge — Architecture Overview
 
 A Tauri v2 desktop app. The frontend is SvelteKit (TypeScript/Svelte 5) running in a Webview; the backend is Rust, accessed exclusively through named Tauri commands over an IPC bridge. All data lives in a local SQLite file — there is no network layer.
 
