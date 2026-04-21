@@ -48,7 +48,7 @@ describe('ExerciseList', () => {
 			onDeleteCustom: vi.fn()
 		});
 		expect(screen.getByRole('heading', { name: /custom/i })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: 'Cable Crunch' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Cable Crunch (custom)' })).toBeInTheDocument();
 	});
 
 	it('calls onSelect when a custom exercise is clicked', async () => {
@@ -59,7 +59,7 @@ describe('ExerciseList', () => {
 			onSelect,
 			onDeleteCustom: vi.fn()
 		});
-		await user.click(screen.getByRole('button', { name: 'Cable Crunch' }));
+		await user.click(screen.getByRole('button', { name: 'Cable Crunch (custom)' }));
 		expect(onSelect).toHaveBeenCalledWith(customExercise);
 	});
 

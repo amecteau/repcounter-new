@@ -79,6 +79,10 @@
 						<li>
 							<button onclick={() => onSelect(exercise)} class="exercise-btn">
 								{exercise.name}
+								{#if exercise.isCustom}
+									<span aria-hidden="true" class="custom-icon">✎</span>
+									<span class="sr-only">(custom)</span>
+								{/if}
 							</button>
 						</li>
 					{/each}
@@ -101,5 +105,8 @@
 	}
 	.exercise-btn {
 		@apply flex h-12 w-full items-center rounded-lg bg-zinc-900 px-4 text-left text-sm text-white hover:bg-zinc-800 active:bg-zinc-700;
+	}
+	.custom-icon {
+		@apply ml-auto text-zinc-500;
 	}
 </style>
