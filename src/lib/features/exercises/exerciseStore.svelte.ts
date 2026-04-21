@@ -6,7 +6,9 @@ export function createExerciseStore() {
 	let customExercises = $state<Exercise[]>([]);
 	let searchQuery = $state('');
 
-	const allExercises = $derived([...DEFAULT_EXERCISES, ...customExercises]);
+	const allExercises = $derived(
+		[...DEFAULT_EXERCISES, ...customExercises].sort((a, b) => a.name.localeCompare(b.name))
+	);
 
 	const filteredExercises = $derived.by(() => {
 		const q = searchQuery.trim().toLowerCase();

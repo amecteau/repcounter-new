@@ -88,4 +88,31 @@ describe('exerciseStore', () => {
 		expect(chestExercises.length).toBeGreaterThan(0);
 		expect(chestExercises.every((e) => e.muscleGroup === 'chest')).toBe(true);
 	});
+
+	it('allExercises are sorted alphabetically by name', () => {
+		const store = createExerciseStore();
+		const names = store.allExercises.map((e) => e.name);
+		const sorted = [...names].sort((a, b) => a.localeCompare(b));
+		expect(names).toEqual(sorted);
+	});
+
+	it('custom exercises sort alphabetically with defaults after being added', async () => {
+		const store = createExerciseStore();
+		await store.addCustom(customExercise);
+		const names = store.allExercises.map((e) => e.name);
+		const sorted = [...names].sort((a, b) => a.localeCompare(b));
+		expect(names).toEqual(sorted);
+	});
+
+	it('getByMuscleGroup returns exercises sorted alphabetically', async () => {
+		const zFirst: Exercise = { id: 'z-core', name: 'Z Core Move', muscleGroup: 'core', isCustom: true };
+		const aFirst: Exercise = { id: 'a-core', name: 'A Core Move', muscleGroup: 'core', isCustom: true };
+		const store = createExerciseStore();
+		await store.addCustom(zFirst);
+		await store.addCustom(aFirst);
+		const coreExercises = store.getByMuscleGroup('core');
+		const names = coreExercises.map((e) => e.name);
+		const sorted = [...names].sort((a, b) => a.localeCompare(b));
+		expect(names).toEqual(sorted);
+	});
 });
