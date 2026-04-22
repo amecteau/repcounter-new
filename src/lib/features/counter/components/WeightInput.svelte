@@ -26,8 +26,8 @@
 <div class="flex flex-col gap-3 rounded-2xl bg-zinc-900 p-4">
 	<span class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Weight</span>
 
-	<!-- Hero weight input — full width so 3-digit numbers have room -->
-	<div class="flex flex-col items-center gap-1">
+	<!-- Hero weight input with unit alongside -->
+	<div class="flex items-center gap-2">
 		<input
 			type="text"
 			inputmode="decimal"
@@ -60,10 +60,10 @@
 <style>
 	@reference "tailwindcss";
 	.weight-display {
-		@apply w-full bg-transparent text-center text-[5rem] font-bold leading-none text-blue-400 placeholder-zinc-700 focus:outline-none;
+		@apply min-w-0 flex-[2] bg-transparent text-center text-[5rem] font-bold leading-none text-blue-400 placeholder-zinc-700 focus:outline-none;
 	}
 	.unit-toggle {
-		@apply rounded px-3 py-1 text-sm font-semibold text-zinc-400 active:text-zinc-200;
+		@apply flex-1 rounded py-1 text-xl font-semibold text-zinc-400 active:text-zinc-200;
 	}
 	.step-btn {
 		@apply flex h-14 min-w-14 items-center justify-center rounded-full bg-zinc-800 px-3 text-xl font-medium text-white active:bg-zinc-700;
