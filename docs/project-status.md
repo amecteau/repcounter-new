@@ -144,8 +144,8 @@
 | 5.5 | Add transition animations between screens | ✅ | `{#key page.url.pathname}` + `in:fade` in layout; 120ms duration |
 | 5.6 | Visual polish pass | ✅ | `focus-visible:ring` added to all interactive elements; active states on dialogs |
 | 5.7 | Accessibility audit | ✅ | Focus rings on BottomNav, WeightInput, RepCounter, ConfirmDialog, all page buttons |
-| 5.8 | Font scale QA at all levels | ⬜ | Test all screens at small, medium, large, extraLarge |
-| 5.9 | Touch target size audit | ⬜ | Verify all targets meet minimums |
+| 5.8 | Font scale QA at all levels | ✅ | Test all screens at small, medium, large, extraLarge |
+| 5.9 | Touch target size audit | ✅ | Verify all targets meet minimums |
 | 5.10 | Final sensor pass | ✅ | svelte-check ✅ eslint ✅ vitest 162/162 ✅ cargo test 18/18 ✅ clippy ✅ |
 
 **Phase 5 exit criteria**: App feels polished. Animations are smooth and purposeful. Accessibility passes. All font scales work on all screens.
