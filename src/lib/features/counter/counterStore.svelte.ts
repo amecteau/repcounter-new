@@ -1,16 +1,14 @@
 import type { WorkoutSet, WeightUnit } from '$lib/shared/types/workout.js';
 import type { Exercise } from '$lib/shared/types/exercise.js';
+import type { StoreResult } from '$lib/shared/types/common.js';
 import * as counterService from './counter.service.js';
+
+export type { StoreResult };
 
 interface ActiveWorkout {
 	id: string;
 	startedAt: string;
 	sets: WorkoutSet[];
-}
-
-export interface StoreResult {
-	success: boolean;
-	error?: string;
 }
 
 export function createCounterStore() {
@@ -102,9 +100,15 @@ export function createCounterStore() {
 			return { success: true };
 		},
 
-		undoLastSet() {
-			if (!workout) return;
-			workout = { ...workout, sets: workout.sets.slice(0, -1) };
+		async removeSet(setId: string): Promise<StoreResult> {
+			if (!workout) return { success: false, error: 'No active workout' };
+			try {
+				await counterService.deleteSet(setId);
+				workout = { ...workout, sets: workout.sets.filter((s) => s.id !== setId) };
+				return { success: true };
+			} catch (e) {
+				return { success: false, error: e instanceof Error ? e.message : 'Failed to remove set' };
+			}
 		},
 
 		async finishWorkout(): Promise<StoreResult> {

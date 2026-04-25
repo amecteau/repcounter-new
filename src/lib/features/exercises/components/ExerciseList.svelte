@@ -10,7 +10,7 @@
 	}: {
 		exercises: Exercise[];
 		onSelect: (exercise: Exercise) => void;
-		onDeleteCustom: (id: string) => void;
+		onDeleteCustom: (id: string) => Promise<void>;
 	} = $props();
 
 	const MUSCLE_GROUP_LABELS: Record<MuscleGroup, string> = {
@@ -108,8 +108,8 @@
 	<ConfirmDialog
 		message="Delete {pendingDeleteName}?"
 		confirmLabel="Delete"
-		onConfirm={() => {
-			onDeleteCustom(pendingDeleteId!);
+		onConfirm={async () => {
+			await onDeleteCustom(pendingDeleteId!);
 			pendingDeleteId = null;
 		}}
 		onCancel={() => (pendingDeleteId = null)}

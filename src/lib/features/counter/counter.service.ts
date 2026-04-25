@@ -21,6 +21,10 @@ export async function getIncompleteWorkout(): Promise<Workout | null> {
 	return invoke<Workout | null>('get_incomplete_workout');
 }
 
+export async function deleteSet(id: string): Promise<void> {
+	await invoke('delete_set', { id });
+}
+
 export async function deleteWorkout(id: string): Promise<void> {
 	await invoke('delete_workout', { id });
 }

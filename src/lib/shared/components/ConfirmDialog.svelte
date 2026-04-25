@@ -9,7 +9,7 @@
 	}: {
 		message: string;
 		confirmLabel?: string;
-		onConfirm: () => void;
+		onConfirm: () => void | Promise<void>;
 		onCancel: () => void;
 	} = $props();
 </script>

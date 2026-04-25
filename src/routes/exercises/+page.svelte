@@ -8,6 +8,7 @@
 
 	let showAddForm = $state(false);
 	let nameError = $state<string | null>(null);
+	let deleteError = $state<string | null>(null);
 
 	$effect(() => {
 		exerciseStore.loadCustomExercises();
@@ -31,8 +32,12 @@
 		showAddForm = false;
 	}
 
-	async function handleDeleteCustom(id: string) {
-		await exerciseStore.removeCustom(id);
+	async function handleDeleteCustom(id: string): Promise<void> {
+		const result = await exerciseStore.removeCustom(id);
+		if (!result.success) {
+			deleteError = result.error ?? 'Failed to delete exercise';
+			setTimeout(() => { deleteError = null; }, 3000);
+		}
 	}
 
 	function handleSelect(exercise: Exercise) {
@@ -60,6 +65,10 @@
 		onSelect={handleSelect}
 		onDeleteCustom={handleDeleteCustom}
 	/>
+
+	{#if deleteError}
+		<p role="alert" class="text-center text-sm text-red-400">{deleteError}</p>
+	{/if}
 
 	<!-- Add custom exercise -->
 	{#if showAddForm}

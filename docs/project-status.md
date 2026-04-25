@@ -6,7 +6,7 @@
 
 ---
 
-## Current Phase: Phase 5 — Polish
+## Current Phase: Phase 8 — Bug Fixes & Error Handling
 
 ## Status Legend
 
@@ -273,6 +273,58 @@ const MIGRATIONS: &[(u32, &str)] = &[
 
 ---
 
+## Phase 8: Bug Fixes & Error Handling
+
+> **Goal**: Fix two confirmed bugs (undo doesn't persist, custom exercise deletion causes GUID display) and introduce a consistent error-handling surface across all destructive actions.
+
+### Background
+
+- **GUID bug**: `SetList` falls back to raw `exercise_id` UUID when an exercise isn't found. Root cause: user deleted a custom exercise mid-workout via the Exercises tab. No guard prevents this.
+- **Undo bug**: `undoLastSet()` only slices the local array. The set is already written to SQLite, so it returns on resume. `delete_set` does not exist anywhere in the stack.
+- **Error surface gaps**: history delete, exercise delete, and undo are all fire-and-forget with no user feedback on failure.
+
+---
+
+### Phase 8A — Guard: prevent deleting a referenced exercise
+
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 8A.1 | Add `exercise_has_sets(conn, id) -> Result<bool>` to `exercise_repo.rs` | ✅ | `SELECT COUNT(*) FROM sets WHERE exercise_id = ?1` |
+| 8A.2 | Enforce guard in `delete_custom_exercise` command — return descriptive `Err(String)` if in use | ✅ | Check runs in command (≤10 lines); repo helper does the query |
+| 8A.3 | `exerciseStore.removeCustom` returns `StoreResult`; only mutates local state on success | ✅ | `StoreResult` moved to `shared/types/common.ts`; counterStore re-exports it |
+| 8A.4 | `ExerciseList` `onDeleteCustom` prop becomes `async`; exercises page surfaces error with inline alert | ✅ | Same pattern as `saveError` on counter page (red `role="alert"`, 3s auto-dismiss). `ConfirmDialog.onConfirm` is now `() => void \| Promise<void>`; `pendingDeleteId` cleared only after await so exercise name stays visible on failure. |
+| 8A.5 | Rust tests: `exercise_has_sets` true/false; guard blocks delete when sets exist | ✅ | 3 new repo tests; 25/25 cargo tests pass |
+| 8A.6 | TS tests: `removeCustom` does not mutate store when service throws | ✅ | 180/180 vitest pass |
+
+---
+
+### Phase 8B — Fix undo: persist deletion to DB
+
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 8B.1 | Add `delete_set(conn, id) -> Result<()>` to `workout_repo.rs` | ✅ | `DELETE FROM sets WHERE id = ?1` |
+| 8B.2 | Add `delete_set` Tauri command to `commands/workout.rs`; register in `lib.rs` | ✅ | Thin wrapper per convention |
+| 8B.3 | Add `deleteSet(id: string): Promise<void>` to `counter.service.ts` | ✅ | |
+| 8B.4 | Replace `undoLastSet()` with `async removeSet(setId: string): Promise<StoreResult>` in `counterStore` | ✅ | Calls service first; only removes from local array on success |
+| 8B.5 | `SetList` `onUndo` callback changes from `(index: number)` to `(setId: string)`; pass `set.id` | ✅ | `flatIndex` removed entirely from grouped map; items are now plain `WorkoutSet[]` |
+| 8B.6 | `+page.svelte` wires async `onUndo`; surfaces failure via existing `saveError` alert | ✅ | |
+| 8B.7 | Rust tests: `delete_set` removes row; unknown id returns `Ok(())` | ✅ | |
+| 8B.8 | TS store tests: `removeSet` calls service with correct id; does not mutate store on failure | ✅ | Also added `deleteSet` service test |
+
+---
+
+### Phase 8C — Error surface consistency
+
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 8C.1 | `historyStore.deleteWorkout` returns `StoreResult`; `WorkoutCard` / history page shows inline error on failure | ⬜ | Currently fire-and-forget |
+| 8C.2 | `SetList.getExerciseName` fallback: `?? 'Unknown Exercise'` instead of `?? exerciseId` | ⬜ | Defensive display for any existing DB rows that reference deleted exercises |
+| 8C.3 | `SetList` test: renders "Unknown Exercise" when exercise ID has no match in prop | ⬜ | |
+
+**Phase 8 exit criteria**: Deleting a custom exercise that has workout history is blocked with a clear error message. Undo removes the set from SQLite. All destructive actions (undo, exercise delete, workout delete) surface errors to the user. All sensors pass.
+
+---
+
 ## Completed Milestones
 
 | Milestone | Date | Notes |
@@ -302,7 +354,9 @@ const MIGRATIONS: &[(u32, &str)] = &[
 
 | Issue | Status | Decision/Resolution |
 |---|---|---|
-| (none yet) | | |
+| GUID shown as exercise header in SetList | 🔄 Phase 8C.2 | Root cause: `getExerciseName` falls back to raw UUID when exercise deleted mid-workout. Fix: fallback to "Unknown Exercise"; guard deletion in 8A. |
+| Undo doesn't persist — sets return on resume | ✅ Phase 8B | Fixed: `removeSet(setId)` deletes from SQLite before removing from local state. |
+| Custom exercise can be deleted while referenced in active/historical sets | ✅ Phase 8A | `exercise_has_sets` guard blocks delete; error surfaced to UI; exercise name stays visible until result confirmed. |
 
 ---
 

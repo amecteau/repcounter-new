@@ -190,7 +190,13 @@
 		<SetList
 			sets={counterStore.sets}
 			exercises={exerciseStore.allExercises}
-			onUndo={() => counterStore.undoLastSet()}
+			onUndo={async (setId) => {
+				const result = await counterStore.removeSet(setId);
+				if (!result.success) {
+					saveError = result.error ?? 'Failed to remove set';
+					setTimeout(() => { saveError = null; }, 2000);
+				}
+			}}
 		/>
 
 		<!-- Finish workout button -->

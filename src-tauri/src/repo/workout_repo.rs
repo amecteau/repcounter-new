@@ -124,6 +124,11 @@ pub fn get_incomplete_workout(conn: &Connection) -> Result<Option<Workout>> {
     }
 }
 
+pub fn delete_set(conn: &Connection, id: &str) -> Result<()> {
+    conn.execute("DELETE FROM sets WHERE id = ?1", [id])?;
+    Ok(())
+}
+
 pub fn delete_workout(conn: &Connection, id: &str) -> Result<()> {
     conn.execute("DELETE FROM sets WHERE workout_id = ?1", [id])?;
     conn.execute("DELETE FROM workouts WHERE id = ?1", [id])?;
@@ -204,6 +209,25 @@ mod tests {
         finish_workout(&conn, "w1", 30).expect("finish");
         let incomplete = get_incomplete_workout(&conn).expect("query");
         assert!(incomplete.is_none());
+    }
+
+    #[test]
+    fn delete_set_removes_the_set() {
+        let conn = setup();
+        save_workout(&conn, "w1", "2026-04-25").expect("save workout");
+        save_set(&conn, "w1", &make_set("s1", "bench-press")).expect("save set");
+        delete_set(&conn, "s1").expect("delete set");
+        let count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM sets WHERE id = 's1'", [], |r| r.get(0))
+            .expect("count");
+        assert_eq!(count, 0);
+    }
+
+    #[test]
+    fn delete_set_unknown_id_is_ok() {
+        let conn = setup();
+        let result = delete_set(&conn, "nonexistent");
+        assert!(result.is_ok());
     }
 
     #[test]

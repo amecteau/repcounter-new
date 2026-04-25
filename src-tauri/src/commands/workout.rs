@@ -42,6 +42,12 @@ pub fn get_incomplete_workout(db: State<DbConn>) -> Result<Option<Workout>, Stri
 }
 
 #[tauri::command]
+pub fn delete_set(db: State<DbConn>, id: String) -> Result<(), String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+    workout_repo::delete_set(&conn, &id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 pub fn delete_workout(db: State<DbConn>, id: String) -> Result<(), String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     workout_repo::delete_workout(&conn, &id).map_err(|e| e.to_string())
