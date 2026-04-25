@@ -82,7 +82,7 @@
 		role="presentation"
 		style="transform: translateX({effectiveTranslateX}px); transition: {dragging
 			? 'none'
-			: 'transform 0.2s ease-out'}"
+			: 'transform 0.2s ease-out'}; touch-action: pan-y;"
 		onpointerdown={onPointerDown}
 		onpointermove={onPointerMove}
 		onpointerup={onPointerUp}

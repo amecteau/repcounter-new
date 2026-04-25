@@ -286,6 +286,16 @@ const MIGRATIONS: &[(u32, &str)] = &[
 
 ---
 
+## Future Features
+
+> Ideas and deferred enhancements to revisit after core phases are complete. Not committed to the UI spec.
+
+| # | Feature | Notes |
+|---|---|---|
+| F.1 | Prevent duplicate exercise names across default + custom | Currently `custom_exercises` DB enforces `UNIQUE COLLATE NOCASE` only within custom exercises. A user can add "Bench Press" as a custom exercise and it coexists with the default. Fix: validate the new name against `DEFAULT_EXERCISES` before saving in the service/store layer. |
+
+---
+
 ## Known Issues & Decisions
 
 > Track any issues, blockers, or decisions made during development here.

@@ -1126,6 +1126,7 @@ These are common agent failure modes. Do not:
 - ❌ Use `console.log` for error handling — use proper error propagation
 - ❌ Use `px` units for font-size, padding, margin, gap, width, or height — use `rem` via Tailwind classes
 - ❌ Make any interaction depend solely on hover — hover is an enhancement, not a requirement
+- ❌ Build gesture-based interactions (swipe, drag, pan) without setting `touch-action` CSS — on Android and iOS, the browser intercepts pointer events for scrolling unless `touch-action: pan-y` (horizontal gestures) or `touch-action: none` (full control) is set on the element
 - ❌ Use native `<select>` dropdowns for the exercise picker — they don't support grouped/searchable UX on mobile
 - ❌ Use `long-press` as the only way to access an action — always provide a visible tap alternative
 - ❌ Set fixed heights in `px` on containers that hold text — text must be allowed to grow with font scale
