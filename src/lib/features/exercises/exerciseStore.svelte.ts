@@ -1,4 +1,5 @@
 import type { Exercise, MuscleGroup } from '$lib/shared/types/exercise.js';
+import type { StoreResult } from '$lib/shared/types/common.js';
 import { DEFAULT_EXERCISES } from './defaultExercises.js';
 import * as exerciseService from './exercise.service.js';
 
@@ -49,9 +50,14 @@ export function createExerciseStore() {
 			customExercises = [...customExercises, exercise];
 		},
 
-		async removeCustom(id: string) {
-			await exerciseService.deleteCustomExercise(id);
-			customExercises = customExercises.filter((e) => e.id !== id);
+		async removeCustom(id: string): Promise<StoreResult> {
+			try {
+				await exerciseService.deleteCustomExercise(id);
+				customExercises = customExercises.filter((e) => e.id !== id);
+				return { success: true };
+			} catch (e) {
+				return { success: false, error: e instanceof Error ? e.message : 'Failed to delete exercise' };
+			}
 		},
 
 		getByMuscleGroup(group: MuscleGroup): Exercise[] {

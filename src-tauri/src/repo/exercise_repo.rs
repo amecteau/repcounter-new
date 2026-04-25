@@ -26,6 +26,15 @@ pub fn get_custom_exercises(conn: &Connection) -> Result<Vec<Exercise>> {
     Ok(exercises)
 }
 
+pub fn exercise_has_sets(conn: &Connection, id: &str) -> Result<bool> {
+    let count: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM sets WHERE exercise_id = ?1",
+        [id],
+        |r| r.get(0),
+    )?;
+    Ok(count > 0)
+}
+
 pub fn delete_custom_exercise(conn: &Connection, id: &str) -> Result<()> {
     conn.execute("DELETE FROM custom_exercises WHERE id = ?1", [id])?;
     Ok(())
@@ -76,6 +85,40 @@ mod tests {
     #[test]
     fn returns_empty_when_no_custom_exercises() {
         let conn = setup();
+        let exercises = get_custom_exercises(&conn).expect("get");
+        assert!(exercises.is_empty());
+    }
+
+    #[test]
+    fn exercise_has_sets_returns_false_when_no_sets() {
+        let conn = setup();
+        save_custom_exercise(&conn, &make_exercise("ex1", "Cable Fly")).expect("save");
+        assert!(!exercise_has_sets(&conn, "ex1").expect("check"));
+    }
+
+    #[test]
+    fn exercise_has_sets_returns_true_when_sets_exist() {
+        let conn = setup();
+        save_custom_exercise(&conn, &make_exercise("ex1", "Cable Fly")).expect("save");
+        conn.execute(
+            "INSERT INTO workouts (id, date, duration_minutes) VALUES ('w1', '2026-04-25', 30)",
+            [],
+        )
+        .expect("insert workout");
+        conn.execute(
+            "INSERT INTO sets (id, workout_id, exercise_id, reps, weight, unit, timestamp, notes)
+             VALUES ('s1', 'w1', 'ex1', 10, 100.0, 'lb', '2026-04-25T10:00:00Z', '')",
+            [],
+        )
+        .expect("insert set");
+        assert!(exercise_has_sets(&conn, "ex1").expect("check"));
+    }
+
+    #[test]
+    fn delete_custom_exercise_succeeds_when_no_sets() {
+        let conn = setup();
+        save_custom_exercise(&conn, &make_exercise("ex1", "Cable Fly")).expect("save");
+        delete_custom_exercise(&conn, "ex1").expect("delete");
         let exercises = get_custom_exercises(&conn).expect("get");
         assert!(exercises.is_empty());
     }

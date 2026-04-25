@@ -28,6 +28,8 @@ Gym rep counter desktop app. Tauri v2 (Rust) + SvelteKit (TypeScript). Single us
 - No `.unwrap()` in Rust production code. No `any` in TypeScript.
 
 ## After Every Task
+Update `docs/project-status.md` for the task just completed (⬜→✅) **before starting the next task**. Do not batch status updates to the end of a phase.
+
 Run the full checklist:
 ```
 npx svelte-check --tsconfig ./tsconfig.json

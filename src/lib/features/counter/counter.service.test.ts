@@ -75,6 +75,12 @@ describe('counter.service', () => {
 		expect(result).toEqual(workout);
 	});
 
+	it('deleteSet invokes delete_set with id', async () => {
+		mockInvoke.mockResolvedValueOnce(undefined);
+		await service.deleteSet('s1');
+		expect(mockInvoke).toHaveBeenCalledWith('delete_set', { id: 's1' });
+	});
+
 	it('deleteWorkout invokes delete_workout with id', async () => {
 		mockInvoke.mockResolvedValueOnce(undefined);
 		await service.deleteWorkout('w1');

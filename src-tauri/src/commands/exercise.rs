@@ -18,5 +18,8 @@ pub fn get_custom_exercises(db: State<DbConn>) -> Result<Vec<Exercise>, String> 
 #[tauri::command]
 pub fn delete_custom_exercise(db: State<DbConn>, id: String) -> Result<(), String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
+    if exercise_repo::exercise_has_sets(&conn, &id).map_err(|e| e.to_string())? {
+        return Err("Cannot delete: this exercise is used in your workout history".to_string());
+    }
     exercise_repo::delete_custom_exercise(&conn, &id).map_err(|e| e.to_string())
 }

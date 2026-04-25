@@ -5,6 +5,7 @@ vi.mock('./counter.service.js', () => ({
 	startWorkout: vi.fn().mockResolvedValue(undefined),
 	finishWorkout: vi.fn().mockResolvedValue(undefined),
 	saveSet: vi.fn().mockResolvedValue(undefined),
+	deleteSet: vi.fn().mockResolvedValue(undefined),
 	getWorkouts: vi.fn().mockResolvedValue([]),
 	getIncompleteWorkout: vi.fn().mockResolvedValue(null),
 	deleteWorkout: vi.fn().mockResolvedValue(undefined)
@@ -127,7 +128,7 @@ describe('counterStore', () => {
 		expect(store.setNumber).toBe(1);
 	});
 
-	it('undoLastSet removes the most recent set', async () => {
+	it('removeSet removes the set by id', async () => {
 		const store = createCounterStore();
 		await store.startWorkout();
 		store.setExercise(benchPress);
@@ -137,7 +138,25 @@ describe('counterStore', () => {
 		store.increment();
 		await store.saveSet();
 		expect(store.sets).toHaveLength(2);
-		store.undoLastSet();
+		const idToRemove = store.sets[1].id;
+		const result = await store.removeSet(idToRemove);
+		expect(result.success).toBe(true);
+		expect(store.sets).toHaveLength(1);
+		expect(store.sets.some((s) => s.id === idToRemove)).toBe(false);
+	});
+
+	it('removeSet does not mutate sets when service throws', async () => {
+		const { deleteSet } = await import('./counter.service.js');
+		vi.mocked(deleteSet).mockRejectedValueOnce(new Error('DB error'));
+		const store = createCounterStore();
+		await store.startWorkout();
+		store.setExercise(benchPress);
+		store.increment();
+		await store.saveSet();
+		const idToRemove = store.sets[0].id;
+		const result = await store.removeSet(idToRemove);
+		expect(result.success).toBe(false);
+		expect(result.error).toContain('DB error');
 		expect(store.sets).toHaveLength(1);
 	});
 

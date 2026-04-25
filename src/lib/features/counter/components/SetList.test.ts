@@ -83,12 +83,12 @@ describe('SetList', () => {
 		expect(undoButtons).toHaveLength(2);
 	});
 
-	it('calls onUndo with the set index when Undo is clicked', async () => {
+	it('calls onUndo with the set id when Undo is clicked', async () => {
 		const user = userEvent.setup();
-		const onUndo = vi.fn();
+		const onUndo = vi.fn().mockResolvedValue(undefined);
 		render(SetList, { sets, exercises, onUndo });
 		await user.click(screen.getByRole('button', { name: /undo set 1/i }));
-		expect(onUndo).toHaveBeenCalledWith(0);
+		expect(onUndo).toHaveBeenCalledWith('s1');
 	});
 
 	it('shows bodyweight when weight is null', () => {
@@ -130,16 +130,15 @@ describe('SetList', () => {
 		expect(undoButtons).toHaveLength(3);
 	});
 
-	it('calls onUndo with the flat array index for grouped sets', async () => {
+	it('calls onUndo with the set id for grouped sets', async () => {
 		const user = userEvent.setup();
-		const onUndo = vi.fn();
+		const onUndo = vi.fn().mockResolvedValue(undefined);
 		render(SetList, { sets: mixedSets, exercises, onUndo });
-		// The squat set is at flat index 1 in mixedSets; it's "Set 1" in the Squat group
 		const squat = screen.getByRole('heading', { name: 'Squat' });
 		const squatSection = squat.closest('div')!;
 		const undoBtn = squatSection.querySelector('button')!;
 		await user.click(undoBtn);
-		expect(onUndo).toHaveBeenCalledWith(1);
+		expect(onUndo).toHaveBeenCalledWith('m2');
 	});
 
 	it('second bench press block shows Set 2 after returning to exercise', () => {

@@ -75,11 +75,25 @@ describe('exerciseStore', () => {
 		expect(store.exercises.some((e) => e.id === 'custom-1')).toBe(true);
 	});
 
-	it('removeCustom removes the exercise', async () => {
+	it('removeCustom removes the exercise and returns success', async () => {
 		const store = createExerciseStore();
 		await store.addCustom(customExercise);
-		await store.removeCustom('custom-1');
+		const result = await store.removeCustom('custom-1');
+		expect(result.success).toBe(true);
 		expect(store.allExercises.some((e) => e.id === 'custom-1')).toBe(false);
+	});
+
+	it('removeCustom returns error and does not remove exercise when service throws', async () => {
+		const { deleteCustomExercise } = await import('./exercise.service.js');
+		vi.mocked(deleteCustomExercise).mockRejectedValueOnce(
+			new Error('Cannot delete: this exercise is used in your workout history')
+		);
+		const store = createExerciseStore();
+		await store.addCustom(customExercise);
+		const result = await store.removeCustom('custom-1');
+		expect(result.success).toBe(false);
+		expect(result.error).toContain('Cannot delete');
+		expect(store.allExercises.some((e) => e.id === 'custom-1')).toBe(true);
 	});
 
 	it('getByMuscleGroup returns only that group', () => {

@@ -21,7 +21,7 @@ A manual rep counting app for weightlifting. Users select an exercise, tap to co
 - `/review` — Run all sensors and check conventions
 - `/test` — Run the full test suite (frontend + backend)
 
-When updating docs/project-status.md, change the task status emoji (⬜→🔄→✅), add notes, and update the Steering Log if you changed any harness files.
+When updating docs/project-status.md, change the task status emoji (⬜→🔄→✅), add notes, and update the Steering Log if you changed any harness files. **Update the status row for each individual task immediately after it is complete — do not batch updates to the end of a phase.**
 
 ---
 

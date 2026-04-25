@@ -9,7 +9,7 @@
 	}: {
 		sets: WorkoutSet[];
 		exercises: Exercise[];
-		onUndo: (index: number) => void;
+		onUndo: (setId: string) => Promise<void>;
 	} = $props();
 
 	function getExerciseName(exerciseId: string): string {
@@ -23,14 +23,13 @@
 
 	const grouped = $derived.by(() => {
 		const order: string[] = [];
-		const map = new Map<string, { set: WorkoutSet; flatIndex: number }[]>();
-		for (let i = 0; i < sets.length; i++) {
-			const s = sets[i];
+		const map = new Map<string, WorkoutSet[]>();
+		for (const s of sets) {
 			if (!map.has(s.exerciseId)) {
 				order.push(s.exerciseId);
 				map.set(s.exerciseId, []);
 			}
-			map.get(s.exerciseId)!.push({ set: s, flatIndex: i });
+			map.get(s.exerciseId)!.push(s);
 		}
 		return order.map((id) => ({ exerciseId: id, items: map.get(id)! }));
 	});
@@ -56,14 +55,14 @@
 			<div class="flex flex-col gap-1">
 				<h3 class="group-heading px-1">{getExerciseName(group.exerciseId)}</h3>
 				<ol class="flex flex-col gap-1">
-					{#each group.items as { set, flatIndex }, i (set.id)}
+					{#each group.items as set, i (set.id)}
 						<li class="set-row">
 							<span>
 								<span class="text-zinc-500">Set {i + 1}:</span>
 								{set.reps} reps @ {formatWeight(set)}
 							</span>
 							<button
-								onclick={() => onUndo(flatIndex)}
+								onclick={() => void onUndo(set.id)}
 								aria-label={`Undo set ${i + 1}`}
 								class="undo-btn"
 							>
