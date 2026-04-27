@@ -20,7 +20,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 ## Current State
 
-**Current phase**: ML.2 — i18n feature scaffold (complete). Next: ML.3 wire i18n into the app shell.
+**Current phase**: ML.3 — Wire i18n into the app shell (complete). Next: ML.4 settings screen.
 
 ---
 
@@ -69,9 +69,9 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| ML.3.1 | Extend `settingsStore.svelte.ts` with `language` state, getter, setter, load/persist | ⬜ | Update `settingsStore.test.ts` with language round-trip. |
-| ML.3.2 | In `+layout.svelte`, sync `i18nStore.setPreference(settingsStore.language)` after `settingsStore.load()` | ⬜ | Add `$effect` so setting changes flow back into i18n. |
-| ML.3.3 | Set `document.documentElement.lang = i18nStore.language` via `$effect` | ⬜ | Accessibility — screen readers honor the lang attribute. |
+| ML.3.1 | Extend `settingsStore.svelte.ts` with `language` state, getter, setter, load/persist | ✅ | Added `language` `$state`, `language` getter, `setLanguage()` setter. `load()` reads `saved.language` with `isLanguagePreference` guard — falls back to `'system'` if the persisted value is unrecognized (defensive against schema drift). `persist()` writes the real `language` value (replacing the temporary `'system'` literal from ML.1.1). 2 new tests in `settingsStore.test.ts`: defaults to `'system'`, `setLanguage` accepts each valid preference. |
+| ML.3.2 | In `+layout.svelte`, sync `i18nStore.setPreference(settingsStore.language)` after `settingsStore.load()` | ✅ | `load()` chained with `.then()` to call `setPreference` once persisted settings have arrived. Added a separate `$effect` that re-syncs whenever `settingsStore.language` changes (covers the path where the user changes the preference at runtime). Also added `language` to the persist effect's dependency list so changes get saved. |
+| ML.3.3 | Set `document.documentElement.lang = i18nStore.language` via `$effect` | ✅ | Dedicated `$effect` updates `<html lang>` reactively from `i18nStore.language`. Guarded with `typeof document !== 'undefined'` for SSR safety. |
 
 **Phase ML.3 exit criteria**: Changing the persisted `language` value updates `i18nStore.language` reactively. `<html lang>` reflects the active language.
 

@@ -1,14 +1,20 @@
-import type { FontScale } from '$lib/shared/types/settings.js';
+import type { FontScale, LanguagePreference } from '$lib/shared/types/settings.js';
 import type { WeightUnit } from '$lib/shared/types/workout.js';
 import { FONT_SCALE_VALUES } from '$lib/shared/types/settings.js';
 import * as settingsService from './settings.service.js';
 
 const SCALES: FontScale[] = ['small', 'medium', 'large', 'extraLarge'];
+const LANGUAGE_PREFERENCES: LanguagePreference[] = ['system', 'en', 'es'];
+
+function isLanguagePreference(value: string): value is LanguagePreference {
+	return (LANGUAGE_PREFERENCES as string[]).includes(value);
+}
 
 export function createSettingsStore() {
 	let fontScale = $state<FontScale>('medium');
 	let weightUnit = $state<WeightUnit>('lb');
 	let lastExerciseId = $state<string | null>(null);
+	let language = $state<LanguagePreference>('system');
 
 	function applyFontScale(scale: FontScale) {
 		if (typeof document !== 'undefined') {
@@ -25,6 +31,9 @@ export function createSettingsStore() {
 		},
 		get lastExerciseId() {
 			return lastExerciseId;
+		},
+		get language() {
+			return language;
 		},
 
 		setFontScale(scale: FontScale) {
@@ -50,12 +59,17 @@ export function createSettingsStore() {
 			lastExerciseId = id;
 		},
 
+		setLanguage(preference: LanguagePreference) {
+			language = preference;
+		},
+
 		async load() {
 			const saved = await settingsService.getSettings();
 			if (saved) {
 				fontScale = saved.fontScale as FontScale;
 				weightUnit = saved.weightUnit as WeightUnit;
 				lastExerciseId = saved.lastExerciseId;
+				language = isLanguagePreference(saved.language) ? saved.language : 'system';
 				applyFontScale(fontScale);
 			}
 		},
@@ -65,7 +79,7 @@ export function createSettingsStore() {
 				fontScale,
 				weightUnit,
 				lastExerciseId,
-				language: 'system'
+				language
 			});
 		}
 	};

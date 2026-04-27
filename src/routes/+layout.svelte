@@ -6,6 +6,7 @@
   import FontScaleControl from "$lib/features/settings/components/FontScaleControl.svelte";
   import { settingsStore } from "$lib/features/settings/settingsStore.svelte.js";
   import { exerciseStore } from "$lib/features/exercises/exerciseStore.svelte.js";
+  import { i18nStore } from "$lib/features/i18n/i18nStore.svelte.js";
   import favicon from "$lib/assets/favicon.svg";
 
   // Respect prefers-reduced-motion — skip transition if user has opted out
@@ -19,20 +20,36 @@
 
   // Load persisted settings and custom exercises on startup
   $effect(() => {
-    settingsStore.load().catch(() => {
-      // First launch or backend unavailable — defaults are fine
-    });
+    settingsStore
+      .load()
+      .then(() => i18nStore.setPreference(settingsStore.language))
+      .catch(() => {
+        // First launch or backend unavailable — defaults are fine
+      });
     exerciseStore.loadCustomExercises().catch(() => {});
   });
 
-  // Persist settings whenever font scale or weight unit changes
+  // Persist settings whenever font scale, weight unit, exercise, or language changes
   $effect(() => {
-    const { fontScale, weightUnit, lastExerciseId } = settingsStore;
+    const { fontScale, weightUnit, lastExerciseId, language } = settingsStore;
     // Accessing reactive values registers them as dependencies
     void fontScale;
     void weightUnit;
     void lastExerciseId;
+    void language;
     settingsStore.persist().catch(() => {});
+  });
+
+  // Keep i18nStore in sync when the persisted language preference changes
+  $effect(() => {
+    i18nStore.setPreference(settingsStore.language);
+  });
+
+  // Reflect the active language on <html lang> for accessibility
+  $effect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = i18nStore.language;
+    }
   });
 </script>
 

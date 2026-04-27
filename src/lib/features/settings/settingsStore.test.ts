@@ -84,4 +84,19 @@ describe('settingsStore', () => {
 		store.setLastExerciseId(null);
 		expect(store.lastExerciseId).toBeNull();
 	});
+
+	it('defaults language to "system"', () => {
+		const store = createSettingsStore();
+		expect(store.language).toBe('system');
+	});
+
+	it('setLanguage accepts each valid preference', () => {
+		const store = createSettingsStore();
+		store.setLanguage('en');
+		expect(store.language).toBe('en');
+		store.setLanguage('es');
+		expect(store.language).toBe('es');
+		store.setLanguage('system');
+		expect(store.language).toBe('system');
+	});
 });
