@@ -31,7 +31,12 @@ export default [
 			'svelte/no-navigation-without-base': 'off',
 			'svelte/no-navigation-without-resolve': 'off',
 			// False positive: new Date().toISOString() is not a reactive Date instance
-			'svelte/prefer-svelte-reactivity': 'off'
+			'svelte/prefer-svelte-reactivity': 'off',
+			// Allow `cond ? a() : b()` as a statement — concise control flow, project preference
+			'@typescript-eslint/no-unused-expressions': [
+				'error',
+				{ allowTernary: true, allowShortCircuit: true }
+			]
 		}
 	},
 	{

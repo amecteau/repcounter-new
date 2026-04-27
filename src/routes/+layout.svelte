@@ -64,11 +64,20 @@
     style="padding-top: max(0.5rem, env(safe-area-inset-top))"
   >
     <span class="text-sm font-medium text-zinc-400">SetForge</span>
-    <FontScaleControl
-      fontScale={settingsStore.fontScale}
-      onDecrease={() => settingsStore.decrease()}
-      onIncrease={() => settingsStore.increase()}
-    />
+    <div class="flex items-center gap-1">
+      <FontScaleControl
+        fontScale={settingsStore.fontScale}
+        onDecrease={() => settingsStore.decrease()}
+        onIncrease={() => settingsStore.increase()}
+      />
+      <a
+        href="/settings"
+        aria-label={i18nStore.t("topBar.settings")}
+        class="flex h-11 w-11 items-center justify-center rounded text-lg text-zinc-400 hover:text-white"
+      >
+        ⚙
+      </a>
+    </div>
   </header>
 
   <!-- Scrollable content area — keyed by route so fade runs on navigation -->

@@ -20,7 +20,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 ## Current State
 
-**Current phase**: ML.3 — Wire i18n into the app shell (complete). Next: ML.4 settings screen.
+**Current phase**: ML.4 — Settings screen (complete). Next: ML.5 translate existing UI.
 
 ---
 
@@ -83,11 +83,11 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| ML.4.1 | Add gear icon `<a href="/settings">` to header in `+layout.svelte` | ⬜ | Next to `FontScaleControl`. `aria-label="Settings"`, ≥`3rem` touch target. |
-| ML.4.2 | Create `src/routes/settings/+page.svelte` | ⬜ | Back link, title, sections. Composes the settings feature. |
-| ML.4.3 | Build `LanguageControl.svelte` | ⬜ | Radio group: Match system / English / Español. Show resolved language in parens for "Match system". Receives `preference`, `resolvedLanguage`, `onChange` via props. No store imports. |
-| ML.4.4 | Write `LanguageControl.test.ts` | ⬜ | Rendering test (three options, current selection visible) + interaction test (clicking each fires `onChange` with right value). |
-| ML.4.5 | Compose `LanguageControl` in `/settings/+page.svelte` | ⬜ | Wire props from `i18nStore` and `settingsStore`. |
+| ML.4.1 | Add gear icon `<a href="/settings">` to header in `+layout.svelte` | ✅ | Wrapped FontScaleControl + gear in a flex container so they sit side by side. Gear is an `<a>` with `aria-label` from `t('topBar.settings')`, `h-11 w-11` (≥`2.75rem`, scales with font size at all levels). Uses Unicode `⚙` glyph. |
+| ML.4.2 | Create `src/routes/settings/+page.svelte` | ✅ | Back button (uses `history.back()` with `goto('/')` fallback for direct loads), localized title, single section hosting `LanguageControl`. Imports `i18nStore` to resolve labels (per AGENTS.md, routes — not components — are the i18n entry point). |
+| ML.4.3 | Build `LanguageControl.svelte` | ✅ | Radio group with three options inside a `<fieldset>`/`<legend>` for screen-reader semantics. Receives `preference`, `resolvedLanguage`, `labels`, `onChange` as props — no store imports. The "Match system" option always shows the resolved language in parens (e.g. "Match system (English)"). Touch targets ≥`3rem` per UI spec. |
+| ML.4.4 | Write `LanguageControl.test.ts` | ✅ | 10 tests: heading renders, 3 radios present, resolved-language parens for both en and es, correct radio checked for each preference value (system/en/es), `onChange` fires with right value when clicking each option. |
+| ML.4.5 | Compose `LanguageControl` in `/settings/+page.svelte` | ✅ | `preference` from `settingsStore.language`, `resolvedLanguage` from `i18nStore.language`, `labels` built from `t()` calls, `onChange` calls `settingsStore.setLanguage()`. The `$effect` in `+layout.svelte` (added in ML.3.2) propagates the change to `i18nStore` and persists it. |
 
 **Phase ML.4 exit criteria**: Gear icon navigates to `/settings`. Selecting a language persists and immediately re-renders the UI in that language.
 
