@@ -10,6 +10,7 @@ pub fn save_settings(conn: &Connection, settings: &UserSettings) -> Result<()> {
             "last_exercise_id",
             settings.last_exercise_id.as_deref().unwrap_or(""),
         ),
+        ("language", &settings.language),
     ];
 
     for (key, value) in pairs {
@@ -35,6 +36,7 @@ pub fn get_settings(conn: &Connection) -> Result<Option<UserSettings>> {
     let mut font_scale = "medium".to_string();
     let mut weight_unit = "lb".to_string();
     let mut last_exercise_id: Option<String> = None;
+    let mut language = "system".to_string();
 
     for (key, value) in rows {
         match key.as_str() {
@@ -43,11 +45,17 @@ pub fn get_settings(conn: &Connection) -> Result<Option<UserSettings>> {
             "last_exercise_id" => {
                 last_exercise_id = if value.is_empty() { None } else { Some(value) }
             }
+            "language" => language = value,
             _ => {}
         }
     }
 
-    Ok(Some(UserSettings { font_scale, weight_unit, last_exercise_id }))
+    Ok(Some(UserSettings {
+        font_scale,
+        weight_unit,
+        last_exercise_id,
+        language,
+    }))
 }
 
 #[cfg(test)]
@@ -66,6 +74,7 @@ mod tests {
             font_scale: "medium".to_string(),
             weight_unit: "lb".to_string(),
             last_exercise_id: None,
+            language: "system".to_string(),
         }
     }
 
@@ -83,12 +92,14 @@ mod tests {
             font_scale: "large".to_string(),
             weight_unit: "kg".to_string(),
             last_exercise_id: Some("bench-press".to_string()),
+            language: "es".to_string(),
         };
         save_settings(&conn, &settings).expect("save");
         let retrieved = get_settings(&conn).expect("get").expect("some");
         assert_eq!(retrieved.font_scale, "large");
         assert_eq!(retrieved.weight_unit, "kg");
         assert_eq!(retrieved.last_exercise_id, Some("bench-press".to_string()));
+        assert_eq!(retrieved.language, "es");
     }
 
     #[test]
@@ -99,11 +110,13 @@ mod tests {
             font_scale: "extraLarge".to_string(),
             weight_unit: "kg".to_string(),
             last_exercise_id: None,
+            language: "en".to_string(),
         };
         save_settings(&conn, &updated).expect("save 2");
         let retrieved = get_settings(&conn).expect("get").expect("some");
         assert_eq!(retrieved.font_scale, "extraLarge");
         assert_eq!(retrieved.weight_unit, "kg");
+        assert_eq!(retrieved.language, "en");
     }
 
     #[test]
@@ -113,9 +126,47 @@ mod tests {
             font_scale: "medium".to_string(),
             weight_unit: "lb".to_string(),
             last_exercise_id: None,
+            language: "system".to_string(),
         };
         save_settings(&conn, &settings).expect("save");
         let retrieved = get_settings(&conn).expect("get").expect("some");
         assert!(retrieved.last_exercise_id.is_none());
+    }
+
+    #[test]
+    fn language_roundtrips_through_all_values() {
+        let conn = setup();
+        for lang in ["system", "en", "es"] {
+            let settings = UserSettings {
+                font_scale: "medium".to_string(),
+                weight_unit: "lb".to_string(),
+                last_exercise_id: None,
+                language: lang.to_string(),
+            };
+            save_settings(&conn, &settings).expect("save");
+            let retrieved = get_settings(&conn).expect("get").expect("some");
+            assert_eq!(retrieved.language, lang);
+        }
+    }
+
+    #[test]
+    fn language_defaults_to_system_when_other_settings_present_but_language_missing() {
+        // Simulates an upgrade: legacy DB has font_scale/weight_unit/last_exercise_id
+        // rows but no `language` row yet. Reading should yield language = "system".
+        let conn = setup();
+        for (key, value) in [
+            ("font_scale", "large"),
+            ("weight_unit", "kg"),
+            ("last_exercise_id", "bench-press"),
+        ] {
+            conn.execute(
+                "INSERT INTO settings (key, value) VALUES (?1, ?2)",
+                [key, value],
+            )
+            .expect("seed");
+        }
+        let retrieved = get_settings(&conn).expect("get").expect("some");
+        assert_eq!(retrieved.language, "system");
+        assert_eq!(retrieved.font_scale, "large");
     }
 }

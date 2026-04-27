@@ -64,7 +64,8 @@ export function createSettingsStore() {
 			await settingsService.saveSettings({
 				fontScale,
 				weightUnit,
-				lastExerciseId
+				lastExerciseId,
+				language: 'system'
 			});
 		}
 	};

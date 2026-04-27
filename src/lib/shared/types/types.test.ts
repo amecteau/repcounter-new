@@ -53,10 +53,12 @@ describe('shared types smoke test', () => {
 		const s: UserSettings = {
 			fontScale: 'medium',
 			weightUnit: 'lb',
-			lastExerciseId: null
+			lastExerciseId: null,
+			language: 'system'
 		};
 		expect(s.fontScale).toBe('medium');
 		expect(s.lastExerciseId).toBeNull();
+		expect(s.language).toBe('system');
 	});
 
 	it('Workout type accepts empty sets', () => {

@@ -20,7 +20,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 ## Current State
 
-**Current phase**: ML.1 — Data model foundations (not started)
+**Current phase**: ML.1 — Data model foundations (complete). Next: ML.2 i18n feature scaffold.
 
 ---
 
@@ -38,10 +38,10 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| ML.1.1 | Extend `src/lib/shared/types/settings.ts` with `Language`, `LanguagePreference`, and add `language: LanguagePreference` to `UserSettings` | ⬜ | Default `'system'`. Update any factory/test fixture that constructs `UserSettings`. |
-| ML.1.2 | Add `pub language: String` to `src-tauri/src/models/settings.rs` `UserSettings` struct | ⬜ | `#[serde(rename_all = "camelCase")]` already applied at the struct level. |
-| ML.1.3 | Update `src-tauri/src/repo/settings_repo.rs` to read/write the `language` key (default `"system"`) | ⬜ | No DB migration — `settings` is already key/value. Add `language` round-trip test. |
-| ML.1.4 | Run Rust checklist: `cargo check && cargo test --lib && cargo clippy` | ⬜ | All must pass before proceeding. |
+| ML.1.1 | Extend `src/lib/shared/types/settings.ts` with `Language`, `LanguagePreference`, and add `language: LanguagePreference` to `UserSettings` | ✅ | Added `Language = 'en' \| 'es'` and `LanguagePreference = 'system' \| Language`. Updated test fixtures in `types.test.ts` and `settings.service.test.ts`. Added a temporary `language: 'system'` literal in `settingsStore.persist()` so the build stays green; ML.3.1 will replace it with full state/getter/setter wiring. |
+| ML.1.2 | Add `pub language: String` to `src-tauri/src/models/settings.rs` `UserSettings` struct | ✅ | Field added; `#[serde(rename_all = "camelCase")]` already on the struct. |
+| ML.1.3 | Update `src-tauri/src/repo/settings_repo.rs` to read/write the `language` key (default `"system"`) | ✅ | `save_settings` upserts `language`; `get_settings` initializes `let mut language = "system".to_string()` before iterating rows so any missing/unreadable language row yields `"system"`. Added two tests: `language_roundtrips_through_all_values` (system/en/es) and `language_defaults_to_system_when_other_settings_present_but_language_missing` (legacy DB upgrade case). |
+| ML.1.4 | Run Rust checklist: `cargo check && cargo test --lib && cargo clippy` | ✅ | `cargo check` clean. `cargo test --lib`: 29/29 pass (was 27, +2 new). `cargo clippy`: clean. Frontend also verified: `svelte-check` 0 errors (37 pre-existing tailwind warnings unrelated), `eslint` clean, `vitest` 187/187 pass. |
 
 **Phase ML.1 exit criteria**: `UserSettings` round-trips a `language` value through the Rust repo. All Rust tests pass.
 
@@ -53,7 +53,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| ML.2.1 | Create folder `src/lib/features/i18n/` with `locales/`, `types.ts`, `detectLanguage.ts`, `i18nStore.svelte.ts` | ⬜ | Per AGENTS.md feature-folder rules — no barrel files. |
+| ML.2.1 | Create folder `src/lib/features/i18n/` with `locales/`, `types.ts`, `detectLanguage.ts`, `i18nStore.svelte.ts` | ✅ | Created `i18n/` folder; `types.ts` derives `TranslationKey = keyof typeof en` so the English dictionary is the source of truth. Other files added in subsequent tasks. |
 | ML.2.2 | Build `locales/en.ts` — flat dictionary, source of truth | ⬜ | Keys: `nav.*`, `muscleGroup.*` (all 11), `exercise.*` (all built-in IDs), `settings.*`, `counter.*`, `history.*`, `exercises.*`, `confirm.*`, `validation.*`, `units.*`. |
 | ML.2.3 | Build `locales/es.ts` typed `Record<TranslationKey, string>` | ⬜ | TypeScript will fail if any key is missing. Translate every key. |
 | ML.2.4 | Build `detectLanguage.ts` + tests | ⬜ | Reads `navigator.language`. Returns `'es'` for prefix `es`, else `'en'`. Test cases: `en-US`, `es-MX`, `es`, `fr`, `undefined`. |

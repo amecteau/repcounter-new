@@ -6,4 +6,5 @@ pub struct UserSettings {
     pub font_scale: String,
     pub weight_unit: String,
     pub last_exercise_id: Option<String>,
+    pub language: String,
 }

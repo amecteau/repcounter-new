@@ -13,7 +13,8 @@ const mockInvoke = vi.mocked(invoke);
 const settings: UserSettings = {
 	fontScale: 'large',
 	weightUnit: 'kg',
-	lastExerciseId: 'bench-press'
+	lastExerciseId: 'bench-press',
+	language: 'system'
 };
 
 beforeEach(() => {
