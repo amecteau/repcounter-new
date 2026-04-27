@@ -113,9 +113,48 @@ jobs:
           name: android-apk
           path: src-tauri/gen/android/app/build/outputs/apk/**/*.apk
 
+  # ── iOS ──────────────────────────────────────────────────────────────────
+  build-ios:
+    needs: [test]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - uses: actions/setup-node@v6.3.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Init iOS project
+        run: npx tauri ios init
+
+      - name: Copy iOS icons
+        run: cp -r src-tauri/icons/ios/. src-tauri/gen/apple/SetForge/Assets.xcassets/AppIcon.appiconset/
+
+      - name: Build iOS (debug, unsigned)
+        run: npx tauri ios build --debug -- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+      - name: Zip app bundle
+        run: |
+          APP=$(find src-tauri/gen/apple/build -name "*.app" | head -n 1)
+          zip -r "$(dirname "$APP")/setforge-${{ github.ref_name }}-ios-debug.zip" "$APP"
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: ios-debug
+          path: src-tauri/gen/apple/build/**/*.zip
+
   # ── Release ────────────────────────────────────────────────────────────────
   release:
-    needs: [build-windows, build-android]
+    needs: [build-windows, build-android, build-ios]
     runs-on: ubuntu-latest
     permissions:
       contents: write

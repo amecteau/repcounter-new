@@ -20,9 +20,12 @@
 		chest: 'Chest',
 		back: 'Back',
 		shoulders: 'Shoulders',
+		traps: 'Traps',
 		biceps: 'Biceps',
 		triceps: 'Triceps',
+		forearms: 'Forearms',
 		legs: 'Legs',
+		calves: 'Calves',
 		core: 'Core',
 		fullBody: 'Full Body'
 	};
@@ -31,9 +34,12 @@
 		'chest',
 		'back',
 		'shoulders',
+		'traps',
 		'biceps',
 		'triceps',
+		'forearms',
 		'legs',
+		'calves',
 		'core',
 		'fullBody'
 	];

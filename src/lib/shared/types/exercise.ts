@@ -13,4 +13,7 @@ export type MuscleGroup =
 	| 'triceps'
 	| 'legs'
 	| 'core'
-	| 'fullBody';
+	| 'fullBody'
+	| 'forearms'
+	| 'traps'
+	| 'calves';

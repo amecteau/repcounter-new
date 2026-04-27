@@ -15,9 +15,12 @@
 		{ value: 'chest', label: 'Chest' },
 		{ value: 'back', label: 'Back' },
 		{ value: 'shoulders', label: 'Shoulders' },
+		{ value: 'traps', label: 'Traps' },
 		{ value: 'biceps', label: 'Biceps' },
 		{ value: 'triceps', label: 'Triceps' },
+		{ value: 'forearms', label: 'Forearms' },
 		{ value: 'legs', label: 'Legs' },
+		{ value: 'calves', label: 'Calves' },
 		{ value: 'core', label: 'Core' },
 		{ value: 'fullBody', label: 'Full Body' }
 	];

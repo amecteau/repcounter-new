@@ -28,11 +28,19 @@ export const DEFAULT_EXERCISES: Exercise[] = [
 	{ id: 'deadlift', name: 'Deadlift', muscleGroup: 'legs', isCustom: false },
 	{ id: 'leg-press', name: 'Leg Press', muscleGroup: 'legs', isCustom: false },
 	{ id: 'leg-curl', name: 'Leg Curl', muscleGroup: 'legs', isCustom: false },
-	{ id: 'calf-raise', name: 'Calf Raise', muscleGroup: 'legs', isCustom: false },
 	// Core
 	{ id: 'plank', name: 'Plank', muscleGroup: 'core', isCustom: false },
 	{ id: 'crunch', name: 'Crunch', muscleGroup: 'core', isCustom: false },
 	{ id: 'leg-raise', name: 'Leg Raise', muscleGroup: 'core', isCustom: false },
+	// Forearms
+	{ id: 'wrist-curl', name: 'Wrist Curl', muscleGroup: 'forearms', isCustom: false },
+	{ id: 'reverse-curl', name: 'Reverse Curl', muscleGroup: 'forearms', isCustom: false },
+	// Traps
+	{ id: 'barbell-shrug', name: 'Barbell Shrug', muscleGroup: 'traps', isCustom: false },
+	{ id: 'dumbbell-shrug', name: 'Dumbbell Shrug', muscleGroup: 'traps', isCustom: false },
+	// Calves
+	{ id: 'calf-raise', name: 'Calf Raise', muscleGroup: 'calves', isCustom: false },
+	{ id: 'seated-calf-raise', name: 'Seated Calf Raise', muscleGroup: 'calves', isCustom: false },
 	// Full Body
 	{ id: 'clean-and-press', name: 'Clean and Press', muscleGroup: 'fullBody', isCustom: false },
 	{ id: 'kettlebell-swing', name: 'Kettlebell Swing', muscleGroup: 'fullBody', isCustom: false }
