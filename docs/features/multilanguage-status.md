@@ -20,7 +20,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 ## Current State
 
-**Current phase**: ML.1 — Data model foundations (complete). Next: ML.2 i18n feature scaffold.
+**Current phase**: ML.2 — i18n feature scaffold (complete). Next: ML.3 wire i18n into the app shell.
 
 ---
 
@@ -54,10 +54,10 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 | # | Task | Status | Notes |
 |---|---|---|---|
 | ML.2.1 | Create folder `src/lib/features/i18n/` with `locales/`, `types.ts`, `detectLanguage.ts`, `i18nStore.svelte.ts` | ✅ | Created `i18n/` folder; `types.ts` derives `TranslationKey = keyof typeof en` so the English dictionary is the source of truth. Other files added in subsequent tasks. |
-| ML.2.2 | Build `locales/en.ts` — flat dictionary, source of truth | ⬜ | Keys: `nav.*`, `muscleGroup.*` (all 11), `exercise.*` (all built-in IDs), `settings.*`, `counter.*`, `history.*`, `exercises.*`, `confirm.*`, `validation.*`, `units.*`. |
-| ML.2.3 | Build `locales/es.ts` typed `Record<TranslationKey, string>` | ⬜ | TypeScript will fail if any key is missing. Translate every key. |
-| ML.2.4 | Build `detectLanguage.ts` + tests | ⬜ | Reads `navigator.language`. Returns `'es'` for prefix `es`, else `'en'`. Test cases: `en-US`, `es-MX`, `es`, `fr`, `undefined`. |
-| ML.2.5 | Build `i18nStore.svelte.ts` + tests | ⬜ | `$state` preference, `$derived` active language and dict, `t()` lookup with key fallback. Tests: default state, `setPreference('es')` flips active, Spanish strings returned, `system` resolves to detected, fallback to key for unknown lookups. |
+| ML.2.2 | Build `locales/en.ts` — flat dictionary, source of truth | ✅ | Flat `as const` object covering: nav (3), top bar (4), muscle groups (11 + custom), all 32 default exercises, counter (19), history (10), exercises (8), settings (12), confirm (5), validation (7), units (3). Used `{n}`/`{name}`/`{date}` placeholders for interpolation — i18nStore renders these in `t()`. |
+| ML.2.3 | Build `locales/es.ts` typed `Record<TranslationKey, string>` | ✅ | Typed as `Dictionary` (which is `typeof en`) — TypeScript fails compilation if any key is missing or extra. All keys translated to Spanish; placeholders preserved verbatim. |
+| ML.2.4 | Build `detectLanguage.ts` + tests | ✅ | `detectSystemLanguage()` reads `navigator.language`, lowercases, splits on `-`, returns `'es'` if prefix is `es` else `'en'`. Falls back to `'en'` when `navigator` is undefined or value is empty. 9 tests pass: en-US, en, es-MX, es-ES, es, ES (uppercase), fr-FR (unsupported → en), empty, undefined. |
+| ML.2.5 | Build `i18nStore.svelte.ts` + tests | ✅ | `$state` preference + systemLanguage; `$derived` active language + dict. `t(key, values?)` interpolates `{name}` placeholders and falls back to key on miss. Module exports a singleton `i18nStore` plus `createI18nStore(initialSystem)` factory for testing. 15 tests pass: default state, system detection wiring, language flips on `setPreference`, `system` re-resolution, interpolation (single/multi/missing/Spanish), key fallback for unknown lookups, Spanish-key smoke checks. |
 
 **Phase ML.2 exit criteria**: `i18nStore.t('nav.counter')` returns "Counter" when active is `en`, "Contador" when `es`. All i18n unit tests pass.
 
@@ -135,3 +135,5 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 |---|---|---|
 | 2026-04-27 | Created this file as the first per-feature status doc | New convention: major features get their own status file under `docs/features/` so feature work doesn't bloat the project-level status. |
 | 2026-04-27 | Added i18n architecture section to AGENTS.md and Settings screen mockup to ui-spec.md | These are the durable spec artifacts; this status file tracks execution against them. |
+| 2026-04-27 | `Dictionary` is `Record<TranslationKey, string>`, not `typeof en` | Initially typed `Dictionary = typeof en`. Because `en` is `as const`, every value collapsed to a literal type, and Spanish strings failed to assign (e.g. `"Contador"` is not assignable to `"Counter"`). Widening the value to `string` keeps full key-coverage enforcement (via `TranslationKey = keyof typeof en`) without freezing values to English literals. |
+| 2026-04-27 | `t()` supports `{name}` placeholder interpolation via second arg | The dictionary uses literal placeholders (`Set {n}`, `Delete {name}?`). Component callers pass `t('counter.setNumber', { n: 3 })`. Unknown placeholders are left untouched (defensive). Avoids string concatenation, which AGENTS.md forbids because it breaks word order across languages. |
