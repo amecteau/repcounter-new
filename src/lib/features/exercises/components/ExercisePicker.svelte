@@ -7,28 +7,24 @@
 		searchQuery,
 		onSelect,
 		onSearch,
-		onCancel
+		onCancel,
+		labels
 	}: {
 		exercises: Exercise[];
 		searchQuery: string;
 		onSelect: (exercise: Exercise) => void;
 		onSearch: (query: string) => void;
 		onCancel: () => void;
+		labels: {
+			dialogLabel: string;
+			searchPlaceholder: string;
+			searchAriaLabel: string;
+			cancelLabel: string;
+			muscleGroups: Record<MuscleGroup, string>;
+			exerciseNames: Record<string, string>;
+			customMarker: string;
+		};
 	} = $props();
-
-	const MUSCLE_GROUP_LABELS: Record<MuscleGroup, string> = {
-		chest: 'Chest',
-		back: 'Back',
-		shoulders: 'Shoulders',
-		traps: 'Traps',
-		biceps: 'Biceps',
-		triceps: 'Triceps',
-		forearms: 'Forearms',
-		legs: 'Legs',
-		calves: 'Calves',
-		core: 'Core',
-		fullBody: 'Full Body'
-	};
 
 	const MUSCLE_GROUP_ORDER: MuscleGroup[] = [
 		'chest',
@@ -44,6 +40,10 @@
 		'fullBody'
 	];
 
+	function displayName(exercise: Exercise): string {
+		return exercise.isCustom ? exercise.name : (labels.exerciseNames[exercise.id] ?? exercise.name);
+	}
+
 	const grouped = $derived.by(() => {
 		const groups = new Map<MuscleGroup, Exercise[]>(MUSCLE_GROUP_ORDER.map((g) => [g, []]));
 		for (const exercise of exercises) {
@@ -55,7 +55,7 @@
 
 <div
 	role="dialog"
-	aria-label="Select exercise"
+	aria-label={labels.dialogLabel}
 	aria-modal="true"
 	use:focusTrap={{ onEscape: onCancel }}
 	class="fixed inset-0 z-50 flex flex-col bg-zinc-950"
@@ -64,14 +64,14 @@
 	<div class="flex items-center gap-3 border-b border-zinc-800 p-4">
 		<input
 			type="search"
-			placeholder="Search exercises..."
+			placeholder={labels.searchPlaceholder}
 			value={searchQuery}
 			oninput={(e) => onSearch((e.target as HTMLInputElement).value)}
-			aria-label="Search exercises"
+			aria-label={labels.searchAriaLabel}
 			class="search-input"
 		/>
-		<button onclick={onCancel} aria-label="Cancel" class="cancel-btn">
-			Cancel
+		<button onclick={onCancel} aria-label={labels.cancelLabel} class="cancel-btn">
+			{labels.cancelLabel}
 		</button>
 	</div>
 
@@ -79,15 +79,15 @@
 	<div class="flex-1 overflow-y-auto p-4">
 		{#each [...grouped.entries()].filter(([, exs]) => exs.length > 0) as [group, groupExercises] (group)}
 			<section class="mb-4">
-				<h3 class="section-heading mb-1">{MUSCLE_GROUP_LABELS[group]}</h3>
+				<h3 class="section-heading mb-1">{labels.muscleGroups[group]}</h3>
 				<ul class="flex flex-col gap-1">
 					{#each groupExercises as exercise (exercise.id)}
 						<li>
 							<button onclick={() => onSelect(exercise)} class="exercise-btn">
-								{exercise.name}
+								{displayName(exercise)}
 								{#if exercise.isCustom}
 									<span aria-hidden="true" class="custom-icon">✎</span>
-									<span class="sr-only">(custom)</span>
+									<span class="sr-only">{labels.customMarker}</span>
 								{/if}
 							</button>
 						</li>

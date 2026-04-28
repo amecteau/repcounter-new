@@ -91,6 +91,14 @@
 
   <!-- Bottom navigation — pb accounts for Android gesture/soft nav bar -->
   <div style="padding-bottom: env(safe-area-inset-bottom)">
-    <BottomNav currentPath={page.url.pathname} />
+    <BottomNav
+      currentPath={page.url.pathname}
+      labels={{
+        counter: i18nStore.t("nav.counter"),
+        history: i18nStore.t("nav.history"),
+        exercises: i18nStore.t("nav.exercises"),
+      }}
+      navAriaLabel={i18nStore.t("nav.ariaLabel")}
+    />
   </div>
 </div>

@@ -3,6 +3,7 @@ export const en = {
 	'nav.counter': 'Counter',
 	'nav.history': 'History',
 	'nav.exercises': 'Exercises',
+	'nav.ariaLabel': 'Main navigation',
 
 	// Top bar
 	'app.title': 'SetForge',
@@ -79,6 +80,13 @@ export const en = {
 	'counter.weightDecrease': 'Decrease weight',
 	'counter.weightIncrease': 'Increase weight',
 	'counter.undo': 'Undo',
+	'counter.unknownExercise': 'Unknown exercise',
+	'counter.resumeSavedSets': 'You have {n} saved sets',
+	'counter.readyToTrain': 'Ready to train?',
+	'counter.saveSetFlash': 'Saved ✓',
+	'counter.undoFailed': 'Could not undo set',
+	'counter.keepGoing': 'Keep Going',
+	'counter.discard': 'Discard',
 
 	// History screen
 	'history.title': 'History',
@@ -98,6 +106,7 @@ export const en = {
 	'exercises.search': 'Search exercises…',
 	'exercises.addCustom': '+ Add Custom Exercise',
 	'exercises.exerciseName': 'Exercise Name',
+	'exercises.namePlaceholder': 'e.g. Cable Fly',
 	'exercises.muscleGroup': 'Muscle Group',
 	'exercises.cancel': 'Cancel',
 	'exercises.save': 'Save',

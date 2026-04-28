@@ -6,26 +6,23 @@
 	let {
 		exercises,
 		onSelect,
-		onDeleteCustom
+		onDeleteCustom,
+		labels
 	}: {
 		exercises: Exercise[];
 		onSelect: (exercise: Exercise) => void;
 		onDeleteCustom: (id: string) => Promise<void>;
+		labels: {
+			muscleGroups: Record<MuscleGroup, string>;
+			exerciseNames: Record<string, string>;
+			customSection: string;
+			customMarker: string;
+			deleteActionLabel: (name: string) => string;
+			confirmMessage: (name: string) => string;
+			confirmLabel: string;
+			cancelLabel: string;
+		};
 	} = $props();
-
-	const MUSCLE_GROUP_LABELS: Record<MuscleGroup, string> = {
-		chest: 'Chest',
-		back: 'Back',
-		shoulders: 'Shoulders',
-		traps: 'Traps',
-		biceps: 'Biceps',
-		triceps: 'Triceps',
-		forearms: 'Forearms',
-		legs: 'Legs',
-		calves: 'Calves',
-		core: 'Core',
-		fullBody: 'Full Body'
-	};
 
 	const MUSCLE_GROUP_ORDER: MuscleGroup[] = [
 		'chest',
@@ -41,6 +38,10 @@
 		'fullBody'
 	];
 
+	function displayName(exercise: Exercise): string {
+		return exercise.isCustom ? exercise.name : (labels.exerciseNames[exercise.id] ?? exercise.name);
+	}
+
 	const builtIn = $derived(exercises.filter((e) => !e.isCustom));
 	const custom = $derived(exercises.filter((e) => e.isCustom));
 
@@ -54,19 +55,21 @@
 
 	let pendingDeleteId = $state<string | null>(null);
 	const pendingDeleteName = $derived(
-		custom.find((e) => e.id === pendingDeleteId)?.name ?? ''
+		pendingDeleteId
+			? (custom.find((e) => e.id === pendingDeleteId)?.name ?? '')
+			: ''
 	);
 </script>
 
 <div class="flex flex-col gap-2">
 	{#each [...grouped.entries()].filter(([, exs]) => exs.length > 0) as [group, groupExercises] (group)}
 		<section>
-			<h2 class="section-heading mb-1 px-1">{MUSCLE_GROUP_LABELS[group]}</h2>
+			<h2 class="section-heading mb-1 px-1">{labels.muscleGroups[group]}</h2>
 			<ul class="flex flex-col gap-1">
 				{#each groupExercises as exercise (exercise.id)}
 					<li>
 						<button onclick={() => onSelect(exercise)} class="exercise-btn">
-							{exercise.name}
+							{displayName(exercise)}
 						</button>
 					</li>
 				{/each}
@@ -76,18 +79,18 @@
 
 	{#if custom.length > 0}
 		<section>
-			<h2 class="section-heading mb-1 px-1">Custom</h2>
+			<h2 class="section-heading mb-1 px-1">{labels.customSection}</h2>
 			<ul class="flex flex-col gap-1">
 				{#each custom as exercise (exercise.id)}
 					<li>
 						<SwipeToReveal
-							actionLabel="Delete {exercise.name}"
+							actionLabel={labels.deleteActionLabel(exercise.name)}
 							onAction={() => (pendingDeleteId = exercise.id)}
 						>
 							<button onclick={() => onSelect(exercise)} class="exercise-btn">
 								{exercise.name}
 								<span aria-hidden="true" class="custom-icon">✎</span>
-								<span class="sr-only">(custom)</span>
+								<span class="sr-only">{labels.customMarker}</span>
 							</button>
 						</SwipeToReveal>
 					</li>
@@ -112,8 +115,9 @@
 
 {#if pendingDeleteId}
 	<ConfirmDialog
-		message="Delete {pendingDeleteName}?"
-		confirmLabel="Delete"
+		message={labels.confirmMessage(pendingDeleteName)}
+		confirmLabel={labels.confirmLabel}
+		cancelLabel={labels.cancelLabel}
 		onConfirm={async () => {
 			await onDeleteCustom(pendingDeleteId!);
 			pendingDeleteId = null;

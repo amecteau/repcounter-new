@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import SetList from './SetList.svelte';
-import type { WorkoutSet } from '$lib/shared/types/workout.js';
+import type { WorkoutSet, WeightUnit } from '$lib/shared/types/workout.js';
 import type { Exercise } from '$lib/shared/types/exercise.js';
 
 const exercises: Exercise[] = [
@@ -61,24 +61,41 @@ const mixedSets: WorkoutSet[] = [
 	}
 ];
 
+const labels = {
+	previousSetsHeading: 'Previous Sets',
+	previousSetsRegion: 'Previous Sets',
+	unknownExercise: 'Unknown Exercise',
+	exerciseNames: {
+		'bench-press': 'Bench Press',
+		'squat': 'Squat'
+	},
+	formatSetLine: (n: number, reps: number, weight: number | null, unit: WeightUnit) =>
+		weight === null
+			? `Set ${n}: ${reps} reps`
+			: `Set ${n}: ${reps} reps @ ${weight} ${unit}`,
+	undoAriaLabel: (n: number) => `Undo Set ${n}`,
+	undoLabel: 'Undo'
+};
+
 describe('SetList', () => {
 	it('renders nothing when sets list is empty', () => {
 		const { container } = render(SetList, {
 			sets: [],
 			exercises,
-			onUndo: vi.fn()
+			onUndo: vi.fn(),
+			labels
 		});
 		expect(container.querySelector('section')).toBeNull();
 	});
 
 	it('renders each set with reps and weight', () => {
-		render(SetList, { sets, exercises, onUndo: vi.fn() });
+		render(SetList, { sets, exercises, onUndo: vi.fn(), labels });
 		expect(screen.getByText(/10 reps @ 135 lb/)).toBeInTheDocument();
 		expect(screen.getByText(/8 reps @ 145 lb/)).toBeInTheDocument();
 	});
 
 	it('renders an Undo button for each set', () => {
-		render(SetList, { sets, exercises, onUndo: vi.fn() });
+		render(SetList, { sets, exercises, onUndo: vi.fn(), labels });
 		const undoButtons = screen.getAllByRole('button', { name: /undo set/i });
 		expect(undoButtons).toHaveLength(2);
 	});
@@ -86,12 +103,12 @@ describe('SetList', () => {
 	it('calls onUndo with the set id when Undo is clicked', async () => {
 		const user = userEvent.setup();
 		const onUndo = vi.fn().mockResolvedValue(undefined);
-		render(SetList, { sets, exercises, onUndo });
+		render(SetList, { sets, exercises, onUndo, labels });
 		await user.click(screen.getByRole('button', { name: /undo set 1/i }));
 		expect(onUndo).toHaveBeenCalledWith('s1');
 	});
 
-	it('shows bodyweight when weight is null', () => {
+	it('shows bodyweight format when weight is null', () => {
 		const bodyweightSet: WorkoutSet[] = [
 			{
 				id: 's3',
@@ -103,28 +120,28 @@ describe('SetList', () => {
 				notes: ''
 			}
 		];
-		render(SetList, { sets: bodyweightSet, exercises, onUndo: vi.fn() });
-		expect(screen.getByText(/bodyweight/i)).toBeInTheDocument();
+		render(SetList, { sets: bodyweightSet, exercises, onUndo: vi.fn(), labels });
+		expect(screen.getByText(/Set 1: 12 reps/)).toBeInTheDocument();
 	});
 
 	it('has a section with accessible label', () => {
-		render(SetList, { sets, exercises, onUndo: vi.fn() });
+		render(SetList, { sets, exercises, onUndo: vi.fn(), labels });
 		expect(screen.getByRole('region', { name: /previous sets/i })).toBeInTheDocument();
 	});
 
 	it('shows exercise name as a group heading', () => {
-		render(SetList, { sets, exercises, onUndo: vi.fn() });
+		render(SetList, { sets, exercises, onUndo: vi.fn(), labels });
 		expect(screen.getByRole('heading', { name: 'Bench Press' })).toBeInTheDocument();
 	});
 
 	it('groups sets by exercise with per-exercise set numbering', () => {
-		render(SetList, { sets: mixedSets, exercises, onUndo: vi.fn() });
+		render(SetList, { sets: mixedSets, exercises, onUndo: vi.fn(), labels });
 		expect(screen.getByRole('heading', { name: 'Bench Press' })).toBeInTheDocument();
 		expect(screen.getByRole('heading', { name: 'Squat' })).toBeInTheDocument();
 	});
 
 	it('numbers sets within each exercise group independently', () => {
-		render(SetList, { sets: mixedSets, exercises, onUndo: vi.fn() });
+		render(SetList, { sets: mixedSets, exercises, onUndo: vi.fn(), labels });
 		const undoButtons = screen.getAllByRole('button', { name: /undo set/i });
 		// bench press has 2 sets, squat has 1 — both groups start at Set 1
 		expect(undoButtons).toHaveLength(3);
@@ -133,7 +150,7 @@ describe('SetList', () => {
 	it('calls onUndo with the set id for grouped sets', async () => {
 		const user = userEvent.setup();
 		const onUndo = vi.fn().mockResolvedValue(undefined);
-		render(SetList, { sets: mixedSets, exercises, onUndo });
+		render(SetList, { sets: mixedSets, exercises, onUndo, labels });
 		const squat = screen.getByRole('heading', { name: 'Squat' });
 		const squatSection = squat.closest('div')!;
 		const undoBtn = squatSection.querySelector('button')!;
@@ -141,9 +158,8 @@ describe('SetList', () => {
 		expect(onUndo).toHaveBeenCalledWith('m2');
 	});
 
-	it('second bench press block shows Set 2 after returning to exercise', () => {
-		render(SetList, { sets: mixedSets, exercises, onUndo: vi.fn() });
-		// Bench press appears once grouped with both its sets (Set 1 and Set 2)
+	it('second bench press block shows Set 1 and Set 2', () => {
+		render(SetList, { sets: mixedSets, exercises, onUndo: vi.fn(), labels });
 		const benchHeading = screen.getByRole('heading', { name: 'Bench Press' });
 		const benchSection = benchHeading.closest('div')!;
 		expect(benchSection.textContent).toContain('Set 1');
@@ -162,7 +178,7 @@ describe('SetList', () => {
 				notes: ''
 			}
 		];
-		render(SetList, { sets: orphanSet, exercises, onUndo: vi.fn() });
+		render(SetList, { sets: orphanSet, exercises, onUndo: vi.fn(), labels });
 		expect(screen.getByRole('heading', { name: 'Unknown Exercise' })).toBeInTheDocument();
 	});
 });

@@ -10,6 +10,32 @@ const exercises: Exercise[] = [
 	{ id: 'pull-up', name: 'Pull-Up', muscleGroup: 'back', isCustom: false }
 ];
 
+const labels = {
+	dialogLabel: 'Select exercise',
+	searchPlaceholder: 'Search exercises…',
+	searchAriaLabel: 'Search exercises…',
+	cancelLabel: 'Cancel',
+	muscleGroups: {
+		chest: 'Chest',
+		back: 'Back',
+		shoulders: 'Shoulders',
+		traps: 'Traps',
+		biceps: 'Biceps',
+		triceps: 'Triceps',
+		forearms: 'Forearms',
+		legs: 'Legs',
+		calves: 'Calves',
+		core: 'Core',
+		fullBody: 'Full Body'
+	},
+	exerciseNames: {
+		'bench-press': 'Bench Press',
+		'squat': 'Squat',
+		'pull-up': 'Pull-Up'
+	},
+	customMarker: '(custom)'
+};
+
 describe('ExercisePicker', () => {
 	it('renders as a dialog', () => {
 		render(ExercisePicker, {
@@ -17,7 +43,8 @@ describe('ExercisePicker', () => {
 			searchQuery: '',
 			onSelect: vi.fn(),
 			onSearch: vi.fn(),
-			onCancel: vi.fn()
+			onCancel: vi.fn(),
+			labels
 		});
 		expect(screen.getByRole('dialog', { name: /select exercise/i })).toBeInTheDocument();
 	});
@@ -28,7 +55,8 @@ describe('ExercisePicker', () => {
 			searchQuery: '',
 			onSelect: vi.fn(),
 			onSearch: vi.fn(),
-			onCancel: vi.fn()
+			onCancel: vi.fn(),
+			labels
 		});
 		expect(screen.getByRole('searchbox', { name: /search exercises/i })).toBeInTheDocument();
 	});
@@ -39,7 +67,8 @@ describe('ExercisePicker', () => {
 			searchQuery: '',
 			onSelect: vi.fn(),
 			onSearch: vi.fn(),
-			onCancel: vi.fn()
+			onCancel: vi.fn(),
+			labels
 		});
 		expect(screen.getByRole('button', { name: 'Bench Press' })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Squat' })).toBeInTheDocument();
@@ -54,7 +83,8 @@ describe('ExercisePicker', () => {
 			searchQuery: '',
 			onSelect,
 			onSearch: vi.fn(),
-			onCancel: vi.fn()
+			onCancel: vi.fn(),
+			labels
 		});
 		await user.click(screen.getByRole('button', { name: 'Bench Press' }));
 		expect(onSelect).toHaveBeenCalledWith(exercises[0]);
@@ -68,7 +98,8 @@ describe('ExercisePicker', () => {
 			searchQuery: '',
 			onSelect: vi.fn(),
 			onSearch,
-			onCancel: vi.fn()
+			onCancel: vi.fn(),
+			labels
 		});
 		await user.type(screen.getByRole('searchbox', { name: /search exercises/i }), 'bench');
 		expect(onSearch).toHaveBeenCalled();
@@ -82,7 +113,8 @@ describe('ExercisePicker', () => {
 			searchQuery: '',
 			onSelect: vi.fn(),
 			onSearch: vi.fn(),
-			onCancel
+			onCancel,
+			labels
 		});
 		await user.click(screen.getByRole('button', { name: /cancel/i }));
 		expect(onCancel).toHaveBeenCalledOnce();
@@ -96,7 +128,8 @@ describe('ExercisePicker', () => {
 			searchQuery: '',
 			onSelect: vi.fn(),
 			onSearch: vi.fn(),
-			onCancel
+			onCancel,
+			labels
 		});
 		await user.keyboard('{Escape}');
 		expect(onCancel).toHaveBeenCalledOnce();
@@ -108,7 +141,8 @@ describe('ExercisePicker', () => {
 			searchQuery: '',
 			onSelect: vi.fn(),
 			onSearch: vi.fn(),
-			onCancel: vi.fn()
+			onCancel: vi.fn(),
+			labels
 		});
 		expect(screen.getByRole('heading', { name: /chest/i })).toBeInTheDocument();
 		expect(screen.getByRole('heading', { name: /legs/i })).toBeInTheDocument();
@@ -121,8 +155,29 @@ describe('ExercisePicker', () => {
 			searchQuery: 'bench',
 			onSelect: vi.fn(),
 			onSearch: vi.fn(),
-			onCancel: vi.fn()
+			onCancel: vi.fn(),
+			labels
 		});
 		expect(screen.getByRole('searchbox', { name: /search exercises/i })).toHaveValue('bench');
+	});
+
+	it('renders translated labels when Spanish labels are provided', () => {
+		const spanishLabels = {
+			...labels,
+			dialogLabel: 'Seleccionar ejercicio',
+			cancelLabel: 'Cancelar',
+			muscleGroups: { ...labels.muscleGroups, chest: 'Pecho', legs: 'Piernas', back: 'Espalda' }
+		};
+		render(ExercisePicker, {
+			exercises,
+			searchQuery: '',
+			onSelect: vi.fn(),
+			onSearch: vi.fn(),
+			onCancel: vi.fn(),
+			labels: spanishLabels
+		});
+		expect(screen.getByRole('dialog', { name: /seleccionar ejercicio/i })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /cancelar/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /pecho/i })).toBeInTheDocument();
 	});
 });

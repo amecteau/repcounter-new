@@ -4,25 +4,36 @@
 	let {
 		onSave,
 		onCancel,
-		externalError = null
+		externalError = null,
+		labels
 	}: {
 		onSave: (name: string, muscleGroup: MuscleGroup) => void;
 		onCancel: () => void;
 		externalError?: string | null;
+		labels: {
+			nameLabel: string;
+			namePlaceholder: string;
+			muscleGroupLabel: string;
+			cancel: string;
+			save: string;
+			nameRequired: string;
+			nameTooLong: string;
+			muscleGroups: Record<MuscleGroup, string>;
+		};
 	} = $props();
 
-	const MUSCLE_GROUPS: { value: MuscleGroup; label: string }[] = [
-		{ value: 'chest', label: 'Chest' },
-		{ value: 'back', label: 'Back' },
-		{ value: 'shoulders', label: 'Shoulders' },
-		{ value: 'traps', label: 'Traps' },
-		{ value: 'biceps', label: 'Biceps' },
-		{ value: 'triceps', label: 'Triceps' },
-		{ value: 'forearms', label: 'Forearms' },
-		{ value: 'legs', label: 'Legs' },
-		{ value: 'calves', label: 'Calves' },
-		{ value: 'core', label: 'Core' },
-		{ value: 'fullBody', label: 'Full Body' }
+	const MUSCLE_GROUP_ORDER: MuscleGroup[] = [
+		'chest',
+		'back',
+		'shoulders',
+		'traps',
+		'biceps',
+		'triceps',
+		'forearms',
+		'legs',
+		'calves',
+		'core',
+		'fullBody'
 	];
 
 	let name = $state('');
@@ -34,11 +45,11 @@
 	function handleSave() {
 		const trimmed = name.trim();
 		if (!trimmed) {
-			internalError = 'Name is required';
+			internalError = labels.nameRequired;
 			return;
 		}
 		if (trimmed.length > 50) {
-			internalError = 'Name must be 50 characters or fewer';
+			internalError = labels.nameTooLong;
 			return;
 		}
 		internalError = null;
@@ -63,24 +74,24 @@
 	<div class="flex flex-col gap-3">
 		<div>
 			<label for="exercise-name" class="mb-1 block text-xs font-medium text-zinc-400">
-				Exercise Name
+				{labels.nameLabel}
 			</label>
 			<input
 				id="exercise-name"
 				type="text"
 				bind:value={name}
-				placeholder="e.g. Cable Fly"
+				placeholder={labels.namePlaceholder}
 				maxlength={50}
 				class="form-input"
 			/>
 		</div>
 		<div>
 			<label for="muscle-group" class="mb-1 block text-xs font-medium text-zinc-400">
-				Muscle Group
+				{labels.muscleGroupLabel}
 			</label>
 			<select id="muscle-group" bind:value={muscleGroup} class="form-input">
-				{#each MUSCLE_GROUPS as g (g.value)}
-					<option value={g.value}>{g.label}</option>
+				{#each MUSCLE_GROUP_ORDER as g (g)}
+					<option value={g}>{labels.muscleGroups[g]}</option>
 				{/each}
 			</select>
 		</div>
@@ -88,8 +99,8 @@
 			<p role="alert" class="text-xs text-red-400">{displayError}</p>
 		{/if}
 		<div class="flex gap-3">
-			<button onclick={onCancel} class="btn-cancel">Cancel</button>
-			<button onclick={handleSave} class="btn-save">Save</button>
+			<button onclick={onCancel} class="btn-cancel">{labels.cancel}</button>
+			<button onclick={handleSave} class="btn-save">{labels.save}</button>
 		</div>
 	</div>
 </div>

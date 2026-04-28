@@ -1,14 +1,21 @@
 <script lang="ts">
 	let {
 		repCount,
-		setNumber = 1,
 		onIncrement,
-		onDecrement
+		onDecrement,
+		labels
 	}: {
 		repCount: number;
-		setNumber?: number;
 		onIncrement: () => void;
 		onDecrement: () => void;
+		labels: {
+			reps: string;
+			setNumber: string;
+			tapToCount: string;
+			increment: string;
+			decrement: string;
+			repsAriaLive: (n: number) => string;
+		};
 	} = $props();
 
 	let pulsing = $state(false);
@@ -28,17 +35,17 @@
 
 <!-- Visually hidden live region announces rep count changes to screen readers -->
 <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
-	{repCount} reps
+	{labels.repsAriaLive(repCount)}
 </div>
 
 <div class="flex flex-col gap-3 rounded-2xl bg-zinc-900 p-4">
 	<div class="flex items-center justify-between">
-		<span class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Reps</span>
-		<span class="text-xs text-zinc-500">Set {setNumber}</span>
+		<span class="text-xs font-semibold uppercase tracking-widest text-zinc-500">{labels.reps}</span>
+		<span class="text-xs text-zinc-500">{labels.setNumber}</span>
 	</div>
 
 	<!-- Giant tap area — the primary counting input -->
-	<button onclick={handleIncrement} aria-label="Tap to count" class="tap-area focus-ring">
+	<button onclick={handleIncrement} aria-label={labels.tapToCount} class="tap-area focus-ring">
 		<span aria-hidden="true" class="rep-count {pulsing ? 'rep-pulse' : ''}">
 			{repCount}
 		</span>
@@ -46,10 +53,10 @@
 
 	<!-- +/− buttons inside the card -->
 	<div class="flex items-center justify-between px-4">
-		<button onclick={onDecrement} aria-label="Decrement" class="round-btn neutral focus-ring">
+		<button onclick={onDecrement} aria-label={labels.decrement} class="round-btn neutral focus-ring">
 			−
 		</button>
-		<button onclick={handleIncrement} aria-label="Increment" class="round-btn primary focus-ring">
+		<button onclick={handleIncrement} aria-label={labels.increment} class="round-btn primary focus-ring">
 			+
 		</button>
 	</div>

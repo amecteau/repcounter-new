@@ -3,6 +3,14 @@ import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import WeightInput from './WeightInput.svelte';
 
+const labels = {
+	heading: 'Weight',
+	weightAriaLabel: 'Weight',
+	unitToggleAriaLabel: (unit: string) => `Toggle weight unit: ${unit}`,
+	decreaseAriaLabel: (delta: number) => `Decrease weight ${delta}`,
+	increaseAriaLabel: (delta: number) => `Increase weight ${delta}`
+};
+
 describe('WeightInput', () => {
 	it('renders the weight field and stepper buttons', () => {
 		render(WeightInput, {
@@ -10,11 +18,12 @@ describe('WeightInput', () => {
 			unit: 'lb',
 			onWeightChange: vi.fn(),
 			onUnitChange: vi.fn(),
-			onAdjust: vi.fn()
+			onAdjust: vi.fn(),
+			labels
 		});
 		expect(screen.getByRole('textbox', { name: /weight/i })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /-5/i })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /\+5/i })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /decrease weight 5/i })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /increase weight 5/i })).toBeInTheDocument();
 	});
 
 	it('displays the current weight value', () => {
@@ -23,7 +32,8 @@ describe('WeightInput', () => {
 			unit: 'lb',
 			onWeightChange: vi.fn(),
 			onUnitChange: vi.fn(),
-			onAdjust: vi.fn()
+			onAdjust: vi.fn(),
+			labels
 		});
 		expect(screen.getByRole('textbox', { name: /weight/i })).toHaveValue('135');
 	});
@@ -34,7 +44,8 @@ describe('WeightInput', () => {
 			unit: 'lb',
 			onWeightChange: vi.fn(),
 			onUnitChange: vi.fn(),
-			onAdjust: vi.fn()
+			onAdjust: vi.fn(),
+			labels
 		});
 		expect(screen.getByRole('textbox', { name: /weight/i })).toHaveValue('');
 	});
@@ -47,9 +58,10 @@ describe('WeightInput', () => {
 			unit: 'lb',
 			onWeightChange: vi.fn(),
 			onUnitChange: vi.fn(),
-			onAdjust
+			onAdjust,
+			labels
 		});
-		await user.click(screen.getByRole('button', { name: /-5/i }));
+		await user.click(screen.getByRole('button', { name: /decrease weight 5/i }));
 		expect(onAdjust).toHaveBeenCalledWith(-5);
 	});
 
@@ -61,9 +73,10 @@ describe('WeightInput', () => {
 			unit: 'lb',
 			onWeightChange: vi.fn(),
 			onUnitChange: vi.fn(),
-			onAdjust
+			onAdjust,
+			labels
 		});
-		await user.click(screen.getByRole('button', { name: /\+5/i }));
+		await user.click(screen.getByRole('button', { name: /increase weight 5/i }));
 		expect(onAdjust).toHaveBeenCalledWith(5);
 	});
 
@@ -73,10 +86,11 @@ describe('WeightInput', () => {
 			unit: 'kg',
 			onWeightChange: vi.fn(),
 			onUnitChange: vi.fn(),
-			onAdjust: vi.fn()
+			onAdjust: vi.fn(),
+			labels
 		});
-		expect(screen.getByRole('button', { name: /-2.5/i })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /\+2.5/i })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /decrease weight 2.5/i })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /increase weight 2.5/i })).toBeInTheDocument();
 	});
 
 	it('calls onUnitChange when unit toggle is clicked', async () => {
@@ -87,7 +101,8 @@ describe('WeightInput', () => {
 			unit: 'lb',
 			onWeightChange: vi.fn(),
 			onUnitChange,
-			onAdjust: vi.fn()
+			onAdjust: vi.fn(),
+			labels
 		});
 		await user.click(screen.getByRole('button', { name: /unit/i }));
 		expect(onUnitChange).toHaveBeenCalledWith('kg');
@@ -101,7 +116,8 @@ describe('WeightInput', () => {
 			unit: 'kg',
 			onWeightChange: vi.fn(),
 			onUnitChange,
-			onAdjust: vi.fn()
+			onAdjust: vi.fn(),
+			labels
 		});
 		await user.click(screen.getByRole('button', { name: /unit/i }));
 		expect(onUnitChange).toHaveBeenCalledWith('lb');
@@ -115,7 +131,8 @@ describe('WeightInput', () => {
 			unit: 'lb',
 			onWeightChange,
 			onUnitChange: vi.fn(),
-			onAdjust: vi.fn()
+			onAdjust: vi.fn(),
+			labels
 		});
 		await user.type(screen.getByRole('textbox', { name: /weight/i }), '135');
 		expect(onWeightChange).toHaveBeenLastCalledWith(135);
@@ -129,7 +146,8 @@ describe('WeightInput', () => {
 			unit: 'lb',
 			onWeightChange,
 			onUnitChange: vi.fn(),
-			onAdjust: vi.fn()
+			onAdjust: vi.fn(),
+			labels
 		});
 		await user.clear(screen.getByRole('textbox', { name: /weight/i }));
 		expect(onWeightChange).toHaveBeenLastCalledWith(null);
@@ -143,9 +161,10 @@ describe('WeightInput', () => {
 			unit: 'kg',
 			onWeightChange: vi.fn(),
 			onUnitChange: vi.fn(),
-			onAdjust
+			onAdjust,
+			labels
 		});
-		await user.click(screen.getByRole('button', { name: /-2.5/i }));
+		await user.click(screen.getByRole('button', { name: /decrease weight 2.5/i }));
 		expect(onAdjust).toHaveBeenCalledWith(-2.5);
 	});
 
@@ -157,9 +176,10 @@ describe('WeightInput', () => {
 			unit: 'kg',
 			onWeightChange: vi.fn(),
 			onUnitChange: vi.fn(),
-			onAdjust
+			onAdjust,
+			labels
 		});
-		await user.click(screen.getByRole('button', { name: /\+2.5/i }));
+		await user.click(screen.getByRole('button', { name: /increase weight 2.5/i }));
 		expect(onAdjust).toHaveBeenCalledWith(2.5);
 	});
 });

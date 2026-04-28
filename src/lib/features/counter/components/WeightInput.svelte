@@ -6,13 +6,21 @@
 		unit,
 		onWeightChange,
 		onUnitChange,
-		onAdjust
+		onAdjust,
+		labels
 	}: {
 		weight: number | null;
 		unit: WeightUnit;
 		onWeightChange: (w: number | null) => void;
 		onUnitChange: (u: WeightUnit) => void;
 		onAdjust: (delta: number) => void;
+		labels: {
+			heading: string;
+			weightAriaLabel: string;
+			unitToggleAriaLabel: (unit: WeightUnit) => string;
+			decreaseAriaLabel: (delta: number) => string;
+			increaseAriaLabel: (delta: number) => string;
+		};
 	} = $props();
 
 	const step = $derived(unit === 'lb' ? 5 : 2.5);
@@ -24,7 +32,7 @@
 </script>
 
 <div class="flex flex-col gap-3 rounded-2xl bg-zinc-900 p-4">
-	<span class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Weight</span>
+	<span class="text-xs font-semibold uppercase tracking-widest text-zinc-500">{labels.heading}</span>
 
 	<!-- Hero weight input with unit alongside -->
 	<div class="flex items-center gap-2">
@@ -33,13 +41,13 @@
 			inputmode="decimal"
 			value={weight ?? ''}
 			oninput={handleInput}
-			aria-label="Weight"
+			aria-label={labels.weightAriaLabel}
 			placeholder="—"
 			class="weight-display"
 		/>
 		<button
 			onclick={() => onUnitChange(unit === 'lb' ? 'kg' : 'lb')}
-			aria-label={`Unit: ${unit}, tap to toggle`}
+			aria-label={labels.unitToggleAriaLabel(unit)}
 			class="unit-toggle focus-ring"
 		>
 			{unit}
@@ -48,10 +56,10 @@
 
 	<!-- Step buttons at the bottom, mirroring RepCounter +/− layout -->
 	<div class="flex items-center justify-between px-4">
-		<button onclick={() => onAdjust(-step)} aria-label={`-${step}`} class="step-btn focus-ring">
+		<button onclick={() => onAdjust(-step)} aria-label={labels.decreaseAriaLabel(step)} class="step-btn focus-ring">
 			−{step}
 		</button>
-		<button onclick={() => onAdjust(step)} aria-label={`+${step}`} class="step-btn focus-ring">
+		<button onclick={() => onAdjust(step)} aria-label={labels.increaseAriaLabel(step)} class="step-btn focus-ring">
 			+{step}
 		</button>
 	</div>

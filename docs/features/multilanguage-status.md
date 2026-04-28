@@ -20,7 +20,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 ## Current State
 
-**Current phase**: ML.4 — Settings screen (complete). Next: ML.5 translate existing UI.
+**Current phase**: ML.5 — Translate existing UI. ML.5.2 complete.
 
 ---
 
@@ -99,8 +99,8 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| ML.5.1 | `BottomNav.svelte` — accept `labels` prop instead of hardcoding tab names | ⬜ | Layout passes `t('nav.*')`. |
-| ML.5.2 | Exercises feature: `ExerciseList`, `ExercisePicker`, `AddExerciseForm` | ⬜ | Replace `MUSCLE_GROUP_LABELS` constant with `labels` prop. Built-in exercises: `t(\`exercise.\${id}\`)`. Custom: `exercise.name` as-is. |
+| ML.5.1 | `BottomNav.svelte` — accept `labels` prop instead of hardcoding tab names | ✅ | `labels: { counter, history, exercises }` + `navAriaLabel` props. Layout passes `t('nav.*')`. Added `nav.ariaLabel` key to `en.ts`/`es.ts` so the screen-reader-visible "Main navigation" landmark also localizes. Test updated to render with explicit props (English defaults plus a Spanish-labels case). |
+| ML.5.2 | Exercises feature: `ExerciseList`, `ExercisePicker`, `AddExerciseForm` | ✅ | Components already accepted `labels` props. Updated all three test files to pass English `labels` constants + a Spanish-labels case per component. Also added 7 missing `counter.*` keys to `en.ts`/`es.ts` (`unknownExercise`, `resumeSavedSets`, `readyToTrain`, `saveSetFlash`, `undoFailed`, `keepGoing`, `discard`) that the counter page was already referencing but which were absent from the dictionaries. |
 | ML.5.3 | Counter feature: `RepCounter`, `WeightInput`, `SetList` | ⬜ | Pass labels for "Tap to count", "Save Set", "Set N", weight unit labels, validation messages. |
 | ML.5.4 | History feature: `WorkoutCard`, `WorkoutDetail` | ⬜ | Translated labels and locale-aware date formatting. |
 | ML.5.5 | `formatDate.ts` — accept `locale: string` argument; pass `i18nStore.language` from routes | ⬜ | Update `formatDate.test.ts` with `en-US` and `es-ES` cases. |

@@ -1,24 +1,38 @@
 <script lang="ts">
-	import type { WorkoutSet } from '$lib/shared/types/workout.js';
+	import type { WorkoutSet, WeightUnit } from '$lib/shared/types/workout.js';
 	import type { Exercise } from '$lib/shared/types/exercise.js';
 
 	let {
 		sets,
 		exercises,
-		onUndo
+		onUndo,
+		labels
 	}: {
 		sets: WorkoutSet[];
 		exercises: Exercise[];
 		onUndo: (setId: string) => Promise<void>;
+		labels: {
+			previousSetsHeading: string;
+			previousSetsRegion: string;
+			unknownExercise: string;
+			exerciseNames: Record<string, string>;
+			formatSetLine: (
+				n: number,
+				reps: number,
+				weight: number | null,
+				unit: WeightUnit
+			) => string;
+			undoAriaLabel: (n: number) => string;
+			undoLabel: string;
+		};
 	} = $props();
 
 	function getExerciseName(exerciseId: string): string {
-		return exercises.find((e) => e.id === exerciseId)?.name ?? 'Unknown Exercise';
-	}
-
-	function formatWeight(set: WorkoutSet): string {
-		if (set.weight === null) return 'bodyweight';
-		return `${set.weight} ${set.unit}`;
+		const exercise = exercises.find((e) => e.id === exerciseId);
+		if (!exercise) return labels.unknownExercise;
+		return exercise.isCustom
+			? exercise.name
+			: (labels.exerciseNames[exercise.id] ?? exercise.name);
 	}
 
 	const grouped = $derived.by(() => {
@@ -49,24 +63,21 @@
 </style>
 
 {#if sets.length > 0}
-	<section aria-label="Previous sets" class="flex flex-col gap-3">
-		<h2 class="text-xs font-medium uppercase tracking-wider text-zinc-500">Previous Sets</h2>
+	<section aria-label={labels.previousSetsRegion} class="flex flex-col gap-3">
+		<h2 class="text-xs font-medium uppercase tracking-wider text-zinc-500">{labels.previousSetsHeading}</h2>
 		{#each grouped as group (group.exerciseId)}
 			<div class="flex flex-col gap-1">
 				<h3 class="group-heading px-1">{getExerciseName(group.exerciseId)}</h3>
 				<ol class="flex flex-col gap-1">
 					{#each group.items as set, i (set.id)}
 						<li class="set-row">
-							<span>
-								<span class="text-zinc-500">Set {i + 1}:</span>
-								{set.reps} reps @ {formatWeight(set)}
-							</span>
+							<span>{labels.formatSetLine(i + 1, set.reps, set.weight, set.unit)}</span>
 							<button
 								onclick={() => void onUndo(set.id)}
-								aria-label={`Undo set ${i + 1}`}
+								aria-label={labels.undoAriaLabel(i + 1)}
 								class="undo-btn"
 							>
-								Undo
+								{labels.undoLabel}
 							</button>
 						</li>
 					{/each}

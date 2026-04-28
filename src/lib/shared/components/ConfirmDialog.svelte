@@ -4,11 +4,13 @@
 	let {
 		message,
 		confirmLabel = 'Confirm',
+		cancelLabel = 'Cancel',
 		onConfirm,
 		onCancel
 	}: {
 		message: string;
 		confirmLabel?: string;
+		cancelLabel?: string;
 		onConfirm: () => void | Promise<void>;
 		onCancel: () => void;
 	} = $props();
@@ -34,7 +36,7 @@
 	<div class="w-full max-w-sm rounded-2xl bg-zinc-900 p-6 text-center">
 		<p class="mb-6 text-zinc-300">{message}</p>
 		<div class="flex gap-3">
-			<button onclick={onCancel} class="btn-cancel focus-ring">Cancel</button>
+			<button onclick={onCancel} class="btn-cancel focus-ring">{cancelLabel}</button>
 			<button onclick={onConfirm} class="btn-confirm focus-ring">{confirmLabel}</button>
 		</div>
 	</div>

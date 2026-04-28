@@ -1,11 +1,19 @@
 <script lang="ts">
-	let { currentPath }: { currentPath: string } = $props();
+	let {
+		currentPath,
+		labels,
+		navAriaLabel
+	}: {
+		currentPath: string;
+		labels: { counter: string; history: string; exercises: string };
+		navAriaLabel: string;
+	} = $props();
 
-	const tabs = [
-		{ path: '/', label: 'Counter', symbol: '◉' },
-		{ path: '/history', label: 'History', symbol: '⏱' },
-		{ path: '/exercises', label: 'Exercises', symbol: '⊞' }
-	];
+	const tabs = $derived([
+		{ path: '/', label: labels.counter, symbol: '◉' },
+		{ path: '/history', label: labels.history, symbol: '⏱' },
+		{ path: '/exercises', label: labels.exercises, symbol: '⊞' }
+	]);
 </script>
 
 <style>
@@ -21,7 +29,7 @@
 	}
 </style>
 
-<nav aria-label="Main navigation" class="border-t border-zinc-800 bg-zinc-950">
+<nav aria-label={navAriaLabel} class="border-t border-zinc-800 bg-zinc-950">
 	<ul class="flex">
 		{#each tabs as tab (tab.path)}
 			<li class="flex-1">

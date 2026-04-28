@@ -5,6 +5,7 @@ export const es: Dictionary = {
 	'nav.counter': 'Contador',
 	'nav.history': 'Historial',
 	'nav.exercises': 'Ejercicios',
+	'nav.ariaLabel': 'Navegación principal',
 
 	// Top bar
 	'app.title': 'SetForge',
@@ -81,6 +82,13 @@ export const es: Dictionary = {
 	'counter.weightDecrease': 'Reducir peso',
 	'counter.weightIncrease': 'Aumentar peso',
 	'counter.undo': 'Deshacer',
+	'counter.unknownExercise': 'Ejercicio desconocido',
+	'counter.resumeSavedSets': 'Tienes {n} series guardadas',
+	'counter.readyToTrain': '¿Listo para entrenar?',
+	'counter.saveSetFlash': 'Guardado ✓',
+	'counter.undoFailed': 'No se pudo deshacer la serie',
+	'counter.keepGoing': 'Seguir',
+	'counter.discard': 'Descartar',
 
 	// History screen
 	'history.title': 'Historial',
@@ -100,6 +108,7 @@ export const es: Dictionary = {
 	'exercises.search': 'Buscar ejercicios…',
 	'exercises.addCustom': '+ Añadir Ejercicio Personalizado',
 	'exercises.exerciseName': 'Nombre del Ejercicio',
+	'exercises.namePlaceholder': 'p.ej. Cruce con Polea',
 	'exercises.muscleGroup': 'Grupo Muscular',
 	'exercises.cancel': 'Cancelar',
 	'exercises.save': 'Guardar',
