@@ -85,7 +85,7 @@
   <link rel="icon" href={favicon} />
 </svelte:head>
 
-<div class="flex h-screen flex-col bg-[#0a0a0a] text-white">
+<div class="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] text-white">
   <!-- Top bar -->
   <header
     class="flex shrink-0 items-center justify-between border-b border-zinc-800 px-4 py-2"
@@ -121,19 +121,21 @@
     {/key}
   </main>
 
-  <!-- Bottom navigation — pb accounts for Android gesture/soft nav bar -->
+  <!-- Bottom navigation — max-height collapses layout space when hidden -->
   <div
-    class="transition-transform duration-200 ease-in-out motion-reduce:transition-none"
-    style="padding-bottom: env(safe-area-inset-bottom); transform: translateY({navVisible ? '0' : '100%'})"
+    class="overflow-hidden transition-[max-height] duration-200 ease-in-out motion-reduce:transition-none"
+    style="max-height: {navVisible ? '6rem' : '0'}"
   >
-    <BottomNav
-      currentPath={page.url.pathname}
-      labels={{
-        counter: i18nStore.t("nav.counter"),
-        history: i18nStore.t("nav.history"),
-        exercises: i18nStore.t("nav.exercises"),
-      }}
-      navAriaLabel={i18nStore.t("nav.ariaLabel")}
-    />
+    <div style="padding-bottom: env(safe-area-inset-bottom)">
+      <BottomNav
+        currentPath={page.url.pathname}
+        labels={{
+          counter: i18nStore.t("nav.counter"),
+          history: i18nStore.t("nav.history"),
+          exercises: i18nStore.t("nav.exercises"),
+        }}
+        navAriaLabel={i18nStore.t("nav.ariaLabel")}
+      />
+    </div>
   </div>
 </div>
