@@ -1,4 +1,9 @@
 <script lang="ts">
+	import type { Component } from 'svelte';
+	import CounterIcon from './icons/CounterIcon.svelte';
+	import HistoryIcon from './icons/HistoryIcon.svelte';
+	import ExercisesIcon from './icons/ExercisesIcon.svelte';
+
 	let {
 		currentPath,
 		labels,
@@ -9,10 +14,12 @@
 		navAriaLabel: string;
 	} = $props();
 
-	const tabs = $derived([
-		{ path: '/', label: labels.counter, symbol: '◉' },
-		{ path: '/history', label: labels.history, symbol: '⏱' },
-		{ path: '/exercises', label: labels.exercises, symbol: '⊞' }
+	type Tab = { path: string; label: string; Icon: Component };
+
+	const tabs: Tab[] = $derived([
+		{ path: '/', label: labels.counter, Icon: CounterIcon },
+		{ path: '/history', label: labels.history, Icon: HistoryIcon },
+		{ path: '/exercises', label: labels.exercises, Icon: ExercisesIcon }
 	]);
 </script>
 
@@ -32,13 +39,14 @@
 <nav aria-label={navAriaLabel} class="border-t border-zinc-800 bg-zinc-950">
 	<ul class="flex">
 		{#each tabs as tab (tab.path)}
+			{@const Icon = tab.Icon}
 			<li class="flex-1">
 				<a
 					href={tab.path}
 					aria-current={currentPath === tab.path ? 'page' : undefined}
 					class="nav-link {currentPath === tab.path ? 'active' : 'inactive'}"
 				>
-					<span aria-hidden="true" class="text-lg leading-none">{tab.symbol}</span>
+					<span aria-hidden="true"><Icon /></span>
 					<span>{tab.label}</span>
 				</a>
 			</li>

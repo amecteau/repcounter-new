@@ -3,6 +3,7 @@
 	import WorkoutDetail from './WorkoutDetail.svelte';
 	import ConfirmDialog from '$lib/shared/components/ConfirmDialog.svelte';
 	import SwipeToReveal from '$lib/shared/components/SwipeToReveal.svelte';
+	import TrashIcon from '$lib/shared/components/icons/TrashIcon.svelte';
 
 	let {
 		workout,
@@ -62,6 +63,7 @@
 </script>
 
 <SwipeToReveal actionLabel={labels.deleteActionLabel} onAction={() => (showConfirm = true)}>
+	{#snippet icon()}<TrashIcon />{/snippet}
 	<article class="rounded-xl bg-zinc-900 p-4">
 		<button onclick={onToggle} aria-expanded={expanded} class="w-full text-left">
 			<div class="flex items-start justify-between gap-2">

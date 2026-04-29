@@ -2,6 +2,7 @@
 	import type { Exercise, MuscleGroup } from '$lib/shared/types/exercise.js';
 	import SwipeToReveal from '$lib/shared/components/SwipeToReveal.svelte';
 	import ConfirmDialog from '$lib/shared/components/ConfirmDialog.svelte';
+	import TrashIcon from '$lib/shared/components/icons/TrashIcon.svelte';
 
 	let {
 		exercises,
@@ -87,6 +88,7 @@
 							actionLabel={labels.deleteActionLabel(exercise.name)}
 							onAction={() => (pendingDeleteId = exercise.id)}
 						>
+							{#snippet icon()}<TrashIcon />{/snippet}
 							<button onclick={() => onSelect(exercise)} class="exercise-btn">
 								{exercise.name}
 								<span aria-hidden="true" class="custom-icon">✎</span>

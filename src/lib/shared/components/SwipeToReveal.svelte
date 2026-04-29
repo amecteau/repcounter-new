@@ -4,11 +4,13 @@
 	let {
 		actionLabel,
 		onAction,
-		children
+		children,
+		icon
 	}: {
 		actionLabel: string;
 		onAction: () => void;
 		children?: Snippet;
+		icon?: Snippet;
 	} = $props();
 
 	const ACTION_WIDTH = 80;
@@ -71,9 +73,13 @@
 			onfocus={() => { keyboardRevealed = true; }}
 			onblur={() => { keyboardRevealed = false; }}
 			aria-label={actionLabel}
-			class="h-full w-full text-sm font-semibold text-white"
+			class="flex h-full w-full items-center justify-center text-sm font-semibold text-white"
 		>
-			{actionLabel}
+			{#if icon}
+				{@render icon()}
+			{:else}
+				{actionLabel}
+			{/if}
 		</button>
 	</div>
 
