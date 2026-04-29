@@ -20,7 +20,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 ## Current State
 
-**Current phase**: ML.5 — Translate existing UI. ML.5.7 complete.
+**Current phase**: ML.5 complete. Beginning ML.6 verification.
 
 ---
 
@@ -106,7 +106,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 | ML.5.5 | `formatDate.ts` — accept `locale: string` argument; pass `i18nStore.language` from routes | ✅ | Implemented as part of ML.5.4: `formatWorkoutDate(dateStr, todayLabel, yesterdayLabel, locale)` already accepts locale. Route derives `locale` from `i18nStore.language` (`'es' → 'es-ES'`, otherwise `'en-US'`). Tests include both en-US and es-ES label cases. |
 | ML.5.6 | `ConfirmDialog.svelte` — accept `confirmLabel` and `cancelLabel` props | ✅ | Both props already accepted (optional, English defaults). Both callers (WorkoutCard, ExerciseList) already pass translated values from their `labels` prop. Added `cancelLabel` test to `ConfirmDialog.test.ts` (8 tests total). |
 | ML.5.7 | `FontScaleControl.svelte` — accept aria-label as prop | ✅ | Added `labels: { decrease: string; increase: string }` prop; hardcoded aria-labels removed. Layout passes `i18nStore.t('topBar.fontScale.decrease/increase')`. Test updated with explicit labels fixture + Spanish case (7 tests). |
-| ML.5.8 | Update touched component tests | ⬜ | English-text assertions render with explicit prop values. No behaviour change since defaults are English. |
+| ML.5.8 | Update touched component tests | ✅ | Completed incrementally alongside each ML.5.x task. All 13 component test files pass explicit `labels` fixtures. 238/238 tests pass. No remaining hardcoded English text assertions relying on component-internal defaults. |
 
 **Phase ML.5 exit criteria**: No user-visible English string remains hardcoded in any component. All component tests pass.
 
