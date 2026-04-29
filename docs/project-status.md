@@ -350,7 +350,7 @@ const MIGRATIONS: &[(u32, &str)] = &[
 
 | Feature | Status file | Current state |
 |---|---|---|
-| Multi-language support (English + Spanish) | [features/multilanguage-status.md](features/multilanguage-status.md) | Phase ML.1 — not started |
+| Multi-language support (English + Spanish) | [features/multilanguage-status.md](features/multilanguage-status.md) | ✅ Complete (ML.1–ML.6) |
 
 ---
 
