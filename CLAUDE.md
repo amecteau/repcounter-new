@@ -26,6 +26,9 @@ Gym rep counter desktop app. Tauri v2 (Rust) + SvelteKit (TypeScript). Single us
 - Use `@testing-library/user-event`, not `fireEvent`.
 - Query elements by role or text, not by CSS class or test ID.
 - No `.unwrap()` in Rust production code. No `any` in TypeScript.
+- **Every user-visible string goes through `t()`.** Add the key to `locales/en.ts` first — TypeScript then enforces `locales/es.ts` completeness. Routes call `t()` and pass results as props. Components never import `i18nStore`.
+- **Never mutate local state before a data operation succeeds.** Call the service first; only update in-memory state when `result.ok === true`. No optimistic updates. On failure: delete/clear operations must leave items visible; create/update operations must preserve the form data so the user can correct and retry — do not clear inputs or reset forms on failure.
+- **Never request elevated device permissions.** All file operations must go through the OS-mediated dialog (SAF on Android, document picker on iOS) — never write to arbitrary paths directly. No `WRITE_EXTERNAL_STORAGE`, broad storage access, contacts, camera, or any other sensitive permission. If a feature cannot be built without elevated access, raise it for discussion before implementing.
 
 ## After Every Task
 Update `docs/project-status.md` for the task just completed (⬜→✅) **before starting the next task**. Do not batch status updates to the end of a phase.

@@ -30,6 +30,20 @@ When updating docs/project-status.md, change the task status emoji (⬜→🔄�
 
 ## Architecture Rules
 
+### Platform Permissions Policy
+
+This app must never request elevated or sensitive device permissions. The goal is zero sensitive permission declarations in the Google Play data safety form and the iOS App Store privacy nutrition label.
+
+**Rules:**
+- All file read/write operations initiated by the user (e.g. export) must go through the OS-mediated system dialog — `dialog.save()` on desktop, Android Storage Access Framework (`ACTION_CREATE_DOCUMENT`), or iOS document picker. The system grants a scoped URI for that one file; the app never gets broad storage access.
+- Never write to arbitrary filesystem paths directly (e.g. hardcoded `Downloads/` path) — that requires `WRITE_EXTERNAL_STORAGE` on Android, which is a sensitive permission.
+- Never request access to contacts, camera, microphone, location, or any other sensitive capability.
+- If a proposed feature cannot be built without a sensitive permission, stop and raise it for discussion before writing any code.
+
+**Why:** Sensitive permissions trigger Google Play review, require a privacy policy justification, and reduce user trust. The OS-dialog pattern gives users full control over what the app can access without any permission grant.
+
+---
+
 ### Separation of Concerns
 
 The frontend and backend are strictly separated:
@@ -439,6 +453,9 @@ async function saveCurrentSet(): Promise<void> {
 - Never show raw error strings from Rust to the user. Services should sanitize.
 - Use `role="alert"` on error messages so screen readers announce them.
 - Errors are transient — clear them when the user takes a new action.
+- **Never mutate local state before a data operation succeeds.** Call the service first and only update in-memory state when `result.ok === true`. Optimistic updates are forbidden. Failure behavior differs by operation type:
+  - **Delete / clear**: the item(s) must remain visible in the UI — do not remove them until the service confirms success.
+  - **Create / update**: preserve the form data as-is — do not clear inputs or reset the form on failure. The user must be able to correct their input and retry without re-entering it.
 
 ### Internationalization (i18n)
 
@@ -1221,6 +1238,8 @@ These are common agent failure modes. Do not:
 - ❌ Use a file-based database in Rust tests — use `Connection::open_in_memory()` for speed and isolation
 - ❌ Skip serialization tests for Rust models — the camelCase JSON output is a contract with the frontend
 - ❌ Import between Rust command modules (e.g., `commands::workout` → `commands::exercise`) — shared logic goes in `repo/` or a shared module
+- ❌ Write to arbitrary filesystem paths directly (e.g. `Downloads/file.csv`) — always use the OS-mediated save dialog so no storage permission is required
+- ❌ Request sensitive device permissions (`WRITE_EXTERNAL_STORAGE`, camera, contacts, location, microphone, etc.) — if a feature seems to need one, stop and raise it before implementing
 
 ---
 
@@ -1232,6 +1251,7 @@ After every change, verify:
 1. `npx svelte-check --tsconfig ./tsconfig.json` — zero errors
 2. `npx eslint src/` — zero warnings
 3. `npx vitest run` — all tests pass (both rendering AND interaction tests)
+4. **i18n check** — if you added any user-visible string: confirm the key exists in both `locales/en.ts` and `locales/es.ts`; confirm the route (not the component) calls `t()` and passes the result as a prop; `svelte-check` passing is not sufficient — verify manually that no hardcoded English text remains in components
 
 **Backend checks (if any Rust code changed):**
 4. `cd src-tauri && cargo check` — compiles with no errors
@@ -1285,10 +1305,11 @@ If any check fails, fix the issue before moving on. Do not proceed with failing 
    - `[newFeature]Store.svelte.ts`
    - `[newFeature].service.ts` (if it needs Tauri commands)
    - `types.ts` (if it has feature-specific types)
-3. Add a route: `src/routes/[newFeature]/+page.svelte`
-4. Add the route to the `BottomNav` component in `shared/components/`
-5. Write tests for store, service, and components
-6. Update this AGENTS.md file to document the new feature
+3. **Add all user-visible strings to `locales/en.ts` first.** TypeScript will fail in `locales/es.ts` until you add the matching Spanish value. Do this before writing any component markup — it prevents hardcoded strings from slipping through.
+4. Add a route: `src/routes/[newFeature]/+page.svelte`
+5. Add the route to the `BottomNav` component in `shared/components/`
+6. Write tests for store, service, and components
+7. Update this AGENTS.md file to document the new feature
 
 ### Moving Code to Shared
 
