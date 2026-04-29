@@ -69,6 +69,10 @@
         fontScale={settingsStore.fontScale}
         onDecrease={() => settingsStore.decrease()}
         onIncrease={() => settingsStore.increase()}
+        labels={{
+          decrease: i18nStore.t("topBar.fontScale.decrease"),
+          increase: i18nStore.t("topBar.fontScale.increase")
+        }}
       />
       <a
         href="/settings"

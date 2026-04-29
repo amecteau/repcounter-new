@@ -4,11 +4,16 @@
 	let {
 		fontScale,
 		onDecrease,
-		onIncrease
+		onIncrease,
+		labels
 	}: {
 		fontScale: FontScale;
 		onDecrease: () => void;
 		onIncrease: () => void;
+		labels: {
+			decrease: string;
+			increase: string;
+		};
 	} = $props();
 
 	const atMin = $derived(fontScale === 'small');
@@ -23,10 +28,10 @@
 </style>
 
 <div class="flex items-center gap-1">
-	<button onclick={onDecrease} disabled={atMin} aria-label="Decrease font size" class="scale-btn">
+	<button onclick={onDecrease} disabled={atMin} aria-label={labels.decrease} class="scale-btn">
 		A−
 	</button>
-	<button onclick={onIncrease} disabled={atMax} aria-label="Increase font size" class="scale-btn">
+	<button onclick={onIncrease} disabled={atMax} aria-label={labels.increase} class="scale-btn">
 		A+
 	</button>
 </div>

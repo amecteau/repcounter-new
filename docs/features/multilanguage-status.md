@@ -20,7 +20,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 ## Current State
 
-**Current phase**: ML.5 — Translate existing UI. ML.5.6 complete.
+**Current phase**: ML.5 — Translate existing UI. ML.5.7 complete.
 
 ---
 
@@ -105,7 +105,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 | ML.5.4 | History feature: `WorkoutCard`, `WorkoutDetail` | ✅ | `WorkoutDetail` and `WorkoutCard` now receive `labels` props; `exercises` prop removed from both. Route builds `exerciseNames` map (`isCustom ? name : t('exercise.id')`), per-workout `dateLabel` via `formatWorkoutDate`, and full label trees. 6 new dictionary keys added (`history.today`, `history.yesterday`, `history.exerciseCountSingle`, `history.setCountSingle`, `history.deleteFailed`, `history.exerciseSummaryAriaLabel`). `history.setSummary` format updated to `Set {n}: {reps} × {weight} {unit}` (was `reps @`). `formatWorkoutDate` created at `src/lib/shared/utils/formatDate.ts` with locale parameter; 7 tests pass. Updated `WorkoutCard.test.ts` (10 tests, +Spanish case) and `WorkoutDetail.test.ts` (7 tests, +Spanish case). Fixed `i18nStore.test.ts` assertion to match new `setSummary` format. 236/236 tests pass. |
 | ML.5.5 | `formatDate.ts` — accept `locale: string` argument; pass `i18nStore.language` from routes | ✅ | Implemented as part of ML.5.4: `formatWorkoutDate(dateStr, todayLabel, yesterdayLabel, locale)` already accepts locale. Route derives `locale` from `i18nStore.language` (`'es' → 'es-ES'`, otherwise `'en-US'`). Tests include both en-US and es-ES label cases. |
 | ML.5.6 | `ConfirmDialog.svelte` — accept `confirmLabel` and `cancelLabel` props | ✅ | Both props already accepted (optional, English defaults). Both callers (WorkoutCard, ExerciseList) already pass translated values from their `labels` prop. Added `cancelLabel` test to `ConfirmDialog.test.ts` (8 tests total). |
-| ML.5.7 | `FontScaleControl.svelte` — accept aria-label as prop | ⬜ | |
+| ML.5.7 | `FontScaleControl.svelte` — accept aria-label as prop | ✅ | Added `labels: { decrease: string; increase: string }` prop; hardcoded aria-labels removed. Layout passes `i18nStore.t('topBar.fontScale.decrease/increase')`. Test updated with explicit labels fixture + Spanish case (7 tests). |
 | ML.5.8 | Update touched component tests | ⬜ | English-text assertions render with explicit prop values. No behaviour change since defaults are English. |
 
 **Phase ML.5 exit criteria**: No user-visible English string remains hardcoded in any component. All component tests pass.
