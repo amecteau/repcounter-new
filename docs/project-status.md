@@ -365,7 +365,7 @@ const MIGRATIONS: &[(u32, &str)] = &[
 | # | Feature | Notes |
 |---|---|---|
 | F.1 | ✅ Prevent duplicate exercise names across default + custom | `addCustom` now checks `allExercises` (defaults + customs) case-insensitively before calling the service. Returns `StoreResult` with `error: 'duplicate'` sentinel; route translates to `validation.exerciseNameDuplicate`. Service failures also caught and returned. 7 new store tests. 245/245 vitest pass. |
-| F.2 | Auto-hide bottom nav on Counter screen | On the Counter screen only, slide the bottom nav out of view when the user scrolls down through the previous sets list; slide it back in on scroll up. Always visible at top/bottom of scroll area and in the "No Active Workout" state. Implementation: scroll listener on the Counter page's scroll container; `transform: translateY` CSS transition on `BottomNav`; nav stays in the accessibility tree when hidden. No new feature folder — changes confined to `+page.svelte` (counter) and `BottomNav.svelte`. See ui-spec.md Screen 1 for full scroll direction rules. |
+| F.2 | ✅ Auto-hide bottom nav on Counter screen | Scroll listener on `<main>` in layout; gates to `pathname === '/'`; 4px delta threshold prevents micro-scroll jitter; atTop/atBottom always shows nav; `translateY(100%)` on nav wrapper with `transition-transform duration-200 motion-reduce:transition-none`; `$effect` on pathname resets visibility on every route change. Nav stays in accessibility tree. No BottomNav changes. 245/245 pass. |
 
 ---
 

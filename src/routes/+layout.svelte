@@ -18,6 +18,34 @@
 
   let { children } = $props();
 
+  // Auto-hide nav on counter screen only
+  let navVisible = $state(true);
+  let lastScrollY = $state(0);
+
+  function handleScroll(e: Event) {
+    if (page.url.pathname !== '/') return;
+    const el = e.currentTarget as HTMLElement;
+    const currentY = Math.max(0, el.scrollTop);
+    const atTop = currentY <= 0;
+    const atBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 1;
+    const delta = currentY - lastScrollY;
+
+    if (atTop || atBottom) {
+      navVisible = true;
+    } else if (Math.abs(delta) >= 4) {
+      navVisible = delta < 0; // scroll up → show, scroll down → hide
+    }
+    lastScrollY = currentY;
+  }
+
+  // Reset nav visibility on every route change
+  $effect(() => {
+    // Reading page.url.pathname registers it as a dependency
+    void page.url.pathname;
+    navVisible = true;
+    lastScrollY = 0;
+  });
+
   // Load persisted settings and custom exercises on startup
   $effect(() => {
     settingsStore
@@ -85,7 +113,7 @@
   </header>
 
   <!-- Scrollable content area — keyed by route so fade runs on navigation -->
-  <main class="flex-1 overflow-y-auto">
+  <main class="flex-1 overflow-y-auto" onscroll={handleScroll}>
     {#key page.url.pathname}
       <div in:fade={{ duration: fadeDuration }} class="h-full">
         {@render children()}
@@ -94,7 +122,10 @@
   </main>
 
   <!-- Bottom navigation — pb accounts for Android gesture/soft nav bar -->
-  <div style="padding-bottom: env(safe-area-inset-bottom)">
+  <div
+    class="transition-transform duration-200 ease-in-out motion-reduce:transition-none"
+    style="padding-bottom: env(safe-area-inset-bottom); transform: translateY({navVisible ? '0' : '100%'})"
+  >
     <BottomNav
       currentPath={page.url.pathname}
       labels={{
