@@ -121,7 +121,9 @@
     {/key}
   </main>
 
-  <!-- Bottom navigation — max-height collapses layout space when hidden -->
+  <!-- Bottom navigation — max-height collapses layout space when hidden.
+       6rem ceiling = ~3rem nav + up to ~2rem safe-area-inset-bottom. If a future device
+       ships a safe-area-inset-bottom larger than ~3rem, bump this value to avoid clipping. -->
   <div
     class="overflow-hidden transition-[max-height] duration-200 ease-in-out motion-reduce:transition-none"
     style="max-height: {navVisible ? '6rem' : '0'}"
