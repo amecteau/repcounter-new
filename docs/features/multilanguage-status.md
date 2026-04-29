@@ -20,7 +20,7 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 
 ## Current State
 
-**Current phase**: ML.5 — Translate existing UI. ML.5.2 complete.
+**Current phase**: ML.5 — Translate existing UI. ML.5.6 complete.
 
 ---
 
@@ -101,10 +101,10 @@ Support English and Spanish in the UI. Add a Settings screen reachable via a gea
 |---|---|---|---|
 | ML.5.1 | `BottomNav.svelte` — accept `labels` prop instead of hardcoding tab names | ✅ | `labels: { counter, history, exercises }` + `navAriaLabel` props. Layout passes `t('nav.*')`. Added `nav.ariaLabel` key to `en.ts`/`es.ts` so the screen-reader-visible "Main navigation" landmark also localizes. Test updated to render with explicit props (English defaults plus a Spanish-labels case). |
 | ML.5.2 | Exercises feature: `ExerciseList`, `ExercisePicker`, `AddExerciseForm` | ✅ | Components already accepted `labels` props. Updated all three test files to pass English `labels` constants + a Spanish-labels case per component. Also added 7 missing `counter.*` keys to `en.ts`/`es.ts` (`unknownExercise`, `resumeSavedSets`, `readyToTrain`, `saveSetFlash`, `undoFailed`, `keepGoing`, `discard`) that the counter page was already referencing but which were absent from the dictionaries. |
-| ML.5.3 | Counter feature: `RepCounter`, `WeightInput`, `SetList` | ⬜ | Pass labels for "Tap to count", "Save Set", "Set N", weight unit labels, validation messages. |
-| ML.5.4 | History feature: `WorkoutCard`, `WorkoutDetail` | ⬜ | Translated labels and locale-aware date formatting. |
-| ML.5.5 | `formatDate.ts` — accept `locale: string` argument; pass `i18nStore.language` from routes | ⬜ | Update `formatDate.test.ts` with `en-US` and `es-ES` cases. |
-| ML.5.6 | `ConfirmDialog.svelte` — accept `confirmLabel` and `cancelLabel` props | ⬜ | English defaults; callers pass translated values. |
+| ML.5.3 | Counter feature: `RepCounter`, `WeightInput`, `SetList` | ✅ | Components already had `labels` props (modified in a prior session). Route (`+page.svelte`) already builds all translated label objects from `i18nStore.t()`. Tests updated as part of ML.5.2 checklist. No hardcoded user-visible strings remain in any counter component. |
+| ML.5.4 | History feature: `WorkoutCard`, `WorkoutDetail` | ✅ | `WorkoutDetail` and `WorkoutCard` now receive `labels` props; `exercises` prop removed from both. Route builds `exerciseNames` map (`isCustom ? name : t('exercise.id')`), per-workout `dateLabel` via `formatWorkoutDate`, and full label trees. 6 new dictionary keys added (`history.today`, `history.yesterday`, `history.exerciseCountSingle`, `history.setCountSingle`, `history.deleteFailed`, `history.exerciseSummaryAriaLabel`). `history.setSummary` format updated to `Set {n}: {reps} × {weight} {unit}` (was `reps @`). `formatWorkoutDate` created at `src/lib/shared/utils/formatDate.ts` with locale parameter; 7 tests pass. Updated `WorkoutCard.test.ts` (10 tests, +Spanish case) and `WorkoutDetail.test.ts` (7 tests, +Spanish case). Fixed `i18nStore.test.ts` assertion to match new `setSummary` format. 236/236 tests pass. |
+| ML.5.5 | `formatDate.ts` — accept `locale: string` argument; pass `i18nStore.language` from routes | ✅ | Implemented as part of ML.5.4: `formatWorkoutDate(dateStr, todayLabel, yesterdayLabel, locale)` already accepts locale. Route derives `locale` from `i18nStore.language` (`'es' → 'es-ES'`, otherwise `'en-US'`). Tests include both en-US and es-ES label cases. |
+| ML.5.6 | `ConfirmDialog.svelte` — accept `confirmLabel` and `cancelLabel` props | ✅ | Both props already accepted (optional, English defaults). Both callers (WorkoutCard, ExerciseList) already pass translated values from their `labels` prop. Added `cancelLabel` test to `ConfirmDialog.test.ts` (8 tests total). |
 | ML.5.7 | `FontScaleControl.svelte` — accept aria-label as prop | ⬜ | |
 | ML.5.8 | Update touched component tests | ⬜ | English-text assertions render with explicit prop values. No behaviour change since defaults are English. |
 

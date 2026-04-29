@@ -1,13 +1,29 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import WorkoutDetail from './WorkoutDetail.svelte';
-import type { Workout } from '$lib/shared/types/workout.js';
-import type { Exercise } from '$lib/shared/types/exercise.js';
+import type { Workout, WeightUnit } from '$lib/shared/types/workout.js';
 
-const exercises: Exercise[] = [
-	{ id: 'bench-press', name: 'Bench Press', muscleGroup: 'chest', isCustom: false },
-	{ id: 'squat', name: 'Squat', muscleGroup: 'legs', isCustom: false }
-];
+const labels = {
+	formatDuration: (n: number) => `Duration: ${n} min`,
+	formatSetLine: (n: number, reps: number, weight: number | null, unit: WeightUnit) =>
+		weight === null ? `Set ${n}: ${reps} × bodyweight` : `Set ${n}: ${reps} × ${weight} ${unit}`,
+	exerciseNames: {
+		'bench-press': 'Bench Press',
+		squat: 'Squat'
+	} as Record<string, string>
+};
+
+const labelsEs = {
+	formatDuration: (n: number) => `Duración: ${n} min`,
+	formatSetLine: (n: number, reps: number, weight: number | null, unit: WeightUnit) =>
+		weight === null
+			? `Serie ${n}: ${reps} × peso corporal`
+			: `Serie ${n}: ${reps} × ${weight} ${unit}`,
+	exerciseNames: {
+		'bench-press': 'Press de Banca',
+		squat: 'Sentadilla'
+	} as Record<string, string>
+};
 
 const workout: Workout = {
 	id: 'w1',
@@ -46,23 +62,23 @@ const workout: Workout = {
 
 describe('WorkoutDetail', () => {
 	it('renders duration when present', () => {
-		render(WorkoutDetail, { workout, exercises });
+		render(WorkoutDetail, { workout, labels });
 		expect(screen.getByText(/52 min/)).toBeInTheDocument();
 	});
 
 	it('does not render duration line when durationMinutes is null', () => {
-		render(WorkoutDetail, { workout: { ...workout, durationMinutes: null }, exercises });
+		render(WorkoutDetail, { workout: { ...workout, durationMinutes: null }, labels });
 		expect(screen.queryByText(/min/)).not.toBeInTheDocument();
 	});
 
 	it('renders exercise names as headings', () => {
-		render(WorkoutDetail, { workout, exercises });
+		render(WorkoutDetail, { workout, labels });
 		expect(screen.getByRole('heading', { name: 'Bench Press' })).toBeInTheDocument();
 		expect(screen.getByRole('heading', { name: 'Squat' })).toBeInTheDocument();
 	});
 
 	it('renders each set with reps and weight', () => {
-		render(WorkoutDetail, { workout, exercises });
+		render(WorkoutDetail, { workout, labels });
 		expect(screen.getByText(/Set 1: 12 × 135 lb/)).toBeInTheDocument();
 		expect(screen.getByText(/Set 2: 10 × 135 lb/)).toBeInTheDocument();
 		expect(screen.getByText(/Set 1: 8 × 225 lb/)).toBeInTheDocument();
@@ -83,14 +99,20 @@ describe('WorkoutDetail', () => {
 				}
 			]
 		};
-		render(WorkoutDetail, { workout: bwWorkout, exercises });
+		render(WorkoutDetail, { workout: bwWorkout, labels });
 		expect(screen.getByText(/bodyweight/)).toBeInTheDocument();
 	});
 
 	it('groups sets under each exercise', () => {
-		render(WorkoutDetail, { workout, exercises });
-		// Bench Press has 2 sets, Squat has 1
+		render(WorkoutDetail, { workout, labels });
 		const benchSection = screen.getByRole('heading', { name: 'Bench Press' }).closest('section');
 		expect(benchSection?.querySelectorAll('li')).toHaveLength(2);
+	});
+
+	it('renders Spanish labels when provided', () => {
+		render(WorkoutDetail, { workout, labels: labelsEs });
+		expect(screen.getByText(/Duración: 52 min/)).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: 'Press de Banca' })).toBeInTheDocument();
+		expect(screen.getByText(/Serie 1: 12 × 135 lb/)).toBeInTheDocument();
 	});
 });

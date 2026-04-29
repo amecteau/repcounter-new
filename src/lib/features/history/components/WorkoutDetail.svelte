@@ -1,23 +1,17 @@
 <script lang="ts">
-	import type { Workout, WorkoutSet } from '$lib/shared/types/workout.js';
-	import type { Exercise } from '$lib/shared/types/exercise.js';
+	import type { Workout, WorkoutSet, WeightUnit } from '$lib/shared/types/workout.js';
 
 	let {
 		workout,
-		exercises
+		labels
 	}: {
 		workout: Workout;
-		exercises: Exercise[];
+		labels: {
+			formatDuration: (n: number) => string;
+			formatSetLine: (n: number, reps: number, weight: number | null, unit: WeightUnit) => string;
+			exerciseNames: Record<string, string>;
+		};
 	} = $props();
-
-	function getExerciseName(id: string): string {
-		return exercises.find((e) => e.id === id)?.name ?? id;
-	}
-
-	function formatWeight(set: WorkoutSet): string {
-		if (set.weight === null) return 'bodyweight';
-		return `${set.weight} ${set.unit}`;
-	}
 
 	// Group sets by exercise, preserving order of first appearance
 	const groupedSets = $derived.by(() => {
@@ -36,16 +30,18 @@
 
 <div class="flex flex-col gap-4 pt-2">
 	{#if workout.durationMinutes}
-		<p class="text-xs text-zinc-500">Duration: {workout.durationMinutes} min</p>
+		<p class="text-xs text-zinc-500">{labels.formatDuration(workout.durationMinutes)}</p>
 	{/if}
 
 	{#each groupedSets as group (group.exerciseId)}
 		<section>
-			<h3 class="mb-1 text-sm font-semibold text-white">{getExerciseName(group.exerciseId)}</h3>
+			<h3 class="mb-1 text-sm font-semibold text-white">
+				{labels.exerciseNames[group.exerciseId] ?? group.exerciseId}
+			</h3>
 			<ol class="flex flex-col gap-1">
 				{#each group.sets as set, i (set.id)}
 					<li class="text-sm text-zinc-400">
-						Set {i + 1}: {set.reps} × {formatWeight(set)}
+						{labels.formatSetLine(i + 1, set.reps, set.weight, set.unit)}
 					</li>
 				{/each}
 			</ol>

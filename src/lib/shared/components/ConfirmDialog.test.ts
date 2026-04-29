@@ -20,6 +20,16 @@ describe('ConfirmDialog', () => {
 		expect(screen.getByRole('button', { name: /confirm/i })).toBeInTheDocument();
 	});
 
+	it('uses a custom cancelLabel', () => {
+		render(ConfirmDialog, {
+			message: 'Sure?',
+			cancelLabel: 'Cancelar',
+			onConfirm: vi.fn(),
+			onCancel: vi.fn()
+		});
+		expect(screen.getByRole('button', { name: 'Cancelar' })).toBeInTheDocument();
+	});
+
 	it('uses a custom confirmLabel', () => {
 		render(ConfirmDialog, {
 			message: 'Sure?',

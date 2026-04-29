@@ -77,7 +77,7 @@ describe('i18nStore', () => {
 			weight: 135,
 			unit: 'lb'
 		});
-		expect(result).toBe('Set 1: 12 reps @ 135 lb');
+		expect(result).toBe('Set 1: 12 × 135 lb');
 	});
 
 	it('t() leaves unknown placeholders untouched', () => {

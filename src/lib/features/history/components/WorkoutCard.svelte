@@ -1,22 +1,41 @@
 <script lang="ts">
-	import type { Workout } from '$lib/shared/types/workout.js';
-	import type { Exercise } from '$lib/shared/types/exercise.js';
+	import type { Workout, WeightUnit } from '$lib/shared/types/workout.js';
 	import WorkoutDetail from './WorkoutDetail.svelte';
 	import ConfirmDialog from '$lib/shared/components/ConfirmDialog.svelte';
 	import SwipeToReveal from '$lib/shared/components/SwipeToReveal.svelte';
 
 	let {
 		workout,
-		exercises,
 		expanded,
 		onToggle,
-		onDelete
+		onDelete,
+		labels
 	}: {
 		workout: Workout;
-		exercises: Exercise[];
 		expanded: boolean;
 		onToggle: () => void;
 		onDelete: () => void | Promise<void>;
+		labels: {
+			dateLabel: string;
+			deleteActionLabel: string;
+			confirmMessage: string;
+			confirmLabel: string;
+			cancelLabel: string;
+			formatExerciseCount: (n: number) => string;
+			formatSetCount: (n: number) => string;
+			exerciseSummaryAriaLabel: string;
+			exerciseNames: Record<string, string>;
+			detailLabels: {
+				formatDuration: (n: number) => string;
+				formatSetLine: (
+					n: number,
+					reps: number,
+					weight: number | null,
+					unit: WeightUnit
+				) => string;
+				exerciseNames: Record<string, string>;
+			};
+		};
 	} = $props();
 
 	let showConfirm = $state(false);
@@ -33,47 +52,26 @@
 			map.set(set.exerciseId, (map.get(set.exerciseId) ?? 0) + 1);
 		}
 		return order.map((id) => ({
-			name: exercises.find((e) => e.id === id)?.name ?? id,
+			name: labels.exerciseNames[id] ?? id,
 			setCount: map.get(id)!
 		}));
 	});
 
 	const exerciseCount = $derived(summaries.length);
 	const setCount = $derived(workout.sets.length);
-
-	function formatDate(dateStr: string): string {
-		const today = new Date().toISOString().slice(0, 10);
-		const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
-		// Use noon to avoid timezone edge cases
-		const d = new Date(dateStr + 'T12:00:00');
-		const formatted = d.toLocaleDateString('en-US', {
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric'
-		});
-		if (dateStr === today) return `Today, ${formatted}`;
-		if (dateStr === yesterday) return `Yesterday, ${formatted}`;
-		return formatted;
-	}
-
-	const dateLabel = $derived(formatDate(workout.date));
-	const confirmMessage = $derived(`Delete workout from ${dateLabel}?`);
 </script>
 
-<SwipeToReveal actionLabel="Delete" onAction={() => (showConfirm = true)}>
+<SwipeToReveal actionLabel={labels.deleteActionLabel} onAction={() => (showConfirm = true)}>
 	<article class="rounded-xl bg-zinc-900 p-4">
 		<button onclick={onToggle} aria-expanded={expanded} class="w-full text-left">
 			<div class="flex items-start justify-between gap-2">
 				<div class="min-w-0 flex-1">
-					<p class="font-semibold text-white">{dateLabel}</p>
+					<p class="font-semibold text-white">{labels.dateLabel}</p>
 					<p class="mt-0.5 text-xs text-zinc-500">
-						{exerciseCount} exercise{exerciseCount === 1 ? '' : 's'} · {setCount} set{setCount ===
-						1
-							? ''
-							: 's'}
+						{labels.formatExerciseCount(exerciseCount)} · {labels.formatSetCount(setCount)}
 					</p>
 					{#if !expanded}
-						<ul class="mt-2 flex flex-col gap-0.5" aria-label="Exercise summary">
+						<ul class="mt-2 flex flex-col gap-0.5" aria-label={labels.exerciseSummaryAriaLabel}>
 							{#each summaries as s (s.name)}
 								<li class="text-sm text-zinc-400">{s.name}: {s.setCount}×</li>
 							{/each}
@@ -85,15 +83,16 @@
 		</button>
 
 		{#if expanded}
-			<WorkoutDetail {workout} {exercises} />
+			<WorkoutDetail {workout} labels={labels.detailLabels} />
 		{/if}
 	</article>
 </SwipeToReveal>
 
 {#if showConfirm}
 	<ConfirmDialog
-		message={confirmMessage}
-		confirmLabel="Delete"
+		message={labels.confirmMessage}
+		confirmLabel={labels.confirmLabel}
+		cancelLabel={labels.cancelLabel}
 		onConfirm={async () => {
 			showConfirm = false;
 			await onDelete();
