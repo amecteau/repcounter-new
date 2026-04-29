@@ -64,6 +64,12 @@ describe("exerciseStore", () => {
     expect(store.getById("does-not-exist")).toBeNull();
   });
 
+  it("addCustom returns success for a unique name", async () => {
+    const store = createExerciseStore();
+    const result = await store.addCustom(customExercise);
+    expect(result.success).toBe(true);
+  });
+
   it("addCustom includes the new exercise", async () => {
     const store = createExerciseStore();
     await store.addCustom(customExercise);
@@ -75,6 +81,56 @@ describe("exerciseStore", () => {
     await store.addCustom(customExercise);
     store.setSearchQuery("cable");
     expect(store.exercises.some((e) => e.id === "custom-1")).toBe(true);
+  });
+
+  it("addCustom returns duplicate error when name matches a default exercise", async () => {
+    const { saveCustomExercise } = await import("./exercise.service.js");
+    vi.mocked(saveCustomExercise).mockClear();
+    const store = createExerciseStore();
+    const result = await store.addCustom({ id: "dup-1", name: "Bench Press", muscleGroup: "chest", isCustom: true });
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("duplicate");
+    expect(saveCustomExercise).not.toHaveBeenCalled();
+  });
+
+  it("addCustom duplicate check against defaults is case-insensitive", async () => {
+    const store = createExerciseStore();
+    const result = await store.addCustom({ id: "dup-2", name: "bench press", muscleGroup: "chest", isCustom: true });
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("duplicate");
+  });
+
+  it("addCustom returns duplicate error when name matches an existing custom exercise", async () => {
+    const store = createExerciseStore();
+    await store.addCustom(customExercise);
+    const result = await store.addCustom({ id: "dup-3", name: "Cable Crunch", muscleGroup: "core", isCustom: true });
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("duplicate");
+  });
+
+  it("addCustom does not add to local state on duplicate", async () => {
+    const store = createExerciseStore();
+    const before = store.allExercises.length;
+    await store.addCustom({ id: "dup-4", name: "Bench Press", muscleGroup: "chest", isCustom: true });
+    expect(store.allExercises.length).toBe(before);
+  });
+
+  it("addCustom returns error and does not mutate state when service throws", async () => {
+    const { saveCustomExercise } = await import("./exercise.service.js");
+    vi.mocked(saveCustomExercise).mockRejectedValueOnce(new Error("DB error"));
+    const store = createExerciseStore();
+    const result = await store.addCustom(customExercise);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("DB error");
+    expect(store.allExercises.some((e) => e.id === "custom-1")).toBe(false);
+  });
+
+  it("addCustom calls service with the correct exercise", async () => {
+    const { saveCustomExercise } = await import("./exercise.service.js");
+    vi.mocked(saveCustomExercise).mockClear();
+    const store = createExerciseStore();
+    await store.addCustom(customExercise);
+    expect(saveCustomExercise).toHaveBeenCalledWith(customExercise);
   });
 
   it("removeCustom removes the exercise and returns success", async () => {

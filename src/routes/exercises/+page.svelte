@@ -65,20 +65,19 @@
   });
 
   async function handleSave(name: string, muscleGroup: MuscleGroup) {
-    const exists = exerciseStore.allExercises.some(
-      (e) => e.name.toLowerCase() === name.toLowerCase(),
-    );
-    if (exists) {
-      nameError = i18nStore.t("validation.exerciseNameDuplicate");
-      return;
-    }
     nameError = null;
-    await exerciseStore.addCustom({
+    const result = await exerciseStore.addCustom({
       id: crypto.randomUUID(),
       name,
       muscleGroup,
       isCustom: true,
     });
+    if (!result.success) {
+      nameError = result.error === 'duplicate'
+        ? i18nStore.t("validation.exerciseNameDuplicate")
+        : result.error ?? i18nStore.t("validation.exerciseNameRequired");
+      return;
+    }
     showAddForm = false;
   }
 

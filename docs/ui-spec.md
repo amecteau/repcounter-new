@@ -116,6 +116,22 @@ The three most important pieces of information — exercise, weight, and reps �
 - Cannot save a set with 0 reps (show brief inline message: "Add some reps first").
 - "Finish Workout" with no saved sets should prompt: "No sets recorded. Discard workout?"
 
+### Future Feature: Auto-hide Bottom Nav on Counter Screen
+
+On the Counter screen only, the bottom navigation bar hides when the user scrolls down through the previous sets list, reclaiming that space for content. It reappears when the user scrolls up. The nav is always visible on the History and Exercises screens.
+
+**Scroll direction convention:**
+- **Scroll down** (content moves up, user reading forward through sets) → **hide** the nav with a slide-down transition.
+- **Scroll up** (content moves down, user backtracking) → **show** the nav with a slide-up transition.
+- **At the top of the scroll area** → always show (no sets above the fold).
+- **At the bottom of the scroll area** → always show (user has reached the end and likely wants to navigate).
+
+**Behaviour:**
+- The hide/show transition must be smooth (`transform: translateY`) — no layout reflow, no content jump.
+- The nav remains in the accessibility tree (focusable, readable by screen readers) even when visually hidden — only its visual position changes.
+- Switching away from the Counter screen via any tab resets the nav to fully visible before the new screen renders.
+- This feature applies only when there is an active workout with at least one saved set (i.e. the Previous Sets list is scrollable). In the "No Active Workout" state the nav is always visible.
+
 ---
 
 ## Screen 2: History

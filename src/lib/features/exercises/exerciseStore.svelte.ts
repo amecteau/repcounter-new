@@ -45,9 +45,20 @@ export function createExerciseStore() {
 			customExercises = loaded;
 		},
 
-		async addCustom(exercise: Exercise) {
-			await exerciseService.saveCustomExercise(exercise);
-			customExercises = [...customExercises, exercise];
+		async addCustom(exercise: Exercise): Promise<StoreResult> {
+			const isDuplicate = allExercises.some(
+				(e) => e.name.toLowerCase() === exercise.name.toLowerCase()
+			);
+			if (isDuplicate) {
+				return { success: false, error: 'duplicate' };
+			}
+			try {
+				await exerciseService.saveCustomExercise(exercise);
+				customExercises = [...customExercises, exercise];
+				return { success: true };
+			} catch (e) {
+				return { success: false, error: e instanceof Error ? e.message : 'Failed to save exercise' };
+			}
 		},
 
 		async removeCustom(id: string): Promise<StoreResult> {
