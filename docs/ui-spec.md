@@ -280,6 +280,12 @@ Reached by tapping the gear icon (⚙) in the top bar. Hosts user preferences. N
 │  ( ) Kilograms (kg)          │  (Future — not in initial i18n build)
 │  (●) Pounds (lb)             │
 │                              │
+│  DATA ────────────────────   │  ← (Future) Clear and export actions
+│                              │
+│  [ Export History ]          │
+│  [ Clear History ]           │
+│  [ Clear Custom Exercises ]  │
+│                              │
 │  ABOUT ──────────────────    │
 │                              │
 │  SetForge v0.0.10            │
@@ -310,6 +316,72 @@ Reached by tapping the gear icon (⚙) in the top bar. Hosts user preferences. N
 ### Validation Rules
 
 - The radio group always has exactly one selection.
+
+---
+
+### Future Feature: Export History
+
+> Tracked in [docs/features/export-history-status.md](features/export-history-status.md).
+
+An "Export History" button in the DATA section generates a CSV of the user's complete workout history and opens the OS native save dialog (Android Storage Access Framework / iOS document picker / desktop save dialog). The user selects the save location; the app writes the file there. No broad storage permission is required.
+
+**CSV format:** One row per set. Columns: Date, Exercise, Set #, Reps, Weight (empty for bodyweight), Unit. Column headers are translated to the active app language.
+
+**Behaviour:**
+- If there is no workout history, show an inline "Nothing to export" message — do not open the save dialog.
+- If the user cancels the save dialog, no error is shown.
+- On success, show a brief inline confirmation with the saved filename.
+
+**Interactions:**
+
+| Action | Input | Result |
+|---|---|---|
+| Export history | Tap "Export History" | Opens OS native save dialog pre-filled with `setforge-history.csv`. User confirms location; file is written. |
+| Cancel export | Dismiss the save dialog | No file written, no error shown. |
+
+---
+
+### Future Feature: Clear History
+
+> Tracked in [docs/features/clear-history-status.md](features/clear-history-status.md).
+
+A "Clear History" button in the DATA section permanently deletes all recorded workout data (sets and workouts). Custom exercises are not affected.
+
+**Behaviour:**
+- Tapping the button shows a confirmation dialog before any data is deleted.
+- On confirm, all workouts and sets are deleted atomically. The History screen immediately shows the empty state.
+- On failure, no data is removed and an inline error is shown.
+- After clearing history, all custom exercises become unreferenced and are eligible for deletion via Clear Custom Exercises.
+
+**Interactions:**
+
+| Action | Input | Result |
+|---|---|---|
+| Clear history | Tap "Clear History" | Confirmation dialog: title + warning that this cannot be undone. |
+| Confirm clear | Tap confirm in dialog | All workout history deleted. Inline success message showing count of workouts removed. |
+| Cancel | Tap cancel in dialog | No data deleted. Dialog dismissed. |
+
+---
+
+### Future Feature: Clear Custom Exercises
+
+> Tracked in [docs/features/clear-exercises-status.md](features/clear-exercises-status.md).
+
+A "Clear Custom Exercises" button in the DATA section deletes all user-created exercises that are not referenced in any workout history. Exercises that appear in history are preserved silently.
+
+**Behaviour:**
+- Tapping the button shows a confirmation dialog that explains only unused exercises will be removed.
+- On confirm, all unreferenced custom exercises are deleted. Referenced exercises are kept without error.
+- If no unused custom exercises exist, an inline "Nothing to clear" message is shown — no dialog.
+- On failure, no exercises are removed and an inline error is shown.
+
+**Interactions:**
+
+| Action | Input | Result |
+|---|---|---|
+| Clear custom exercises | Tap "Clear Custom Exercises" | Confirmation dialog explaining unused exercises will be deleted and referenced ones are kept. |
+| Confirm clear | Tap confirm in dialog | Unused custom exercises deleted. Inline success message showing count removed. |
+| Cancel | Tap cancel in dialog | No data deleted. Dialog dismissed. |
 
 ---
 
