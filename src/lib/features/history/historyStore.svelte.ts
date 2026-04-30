@@ -1,5 +1,5 @@
 import type { Workout } from '$lib/shared/types/workout.js';
-import type { StoreResult } from '$lib/shared/types/common.js';
+import type { ServiceResult, StoreResult } from '$lib/shared/types/common.js';
 import * as historyService from './history.service.js';
 
 export function createHistoryStore() {
@@ -31,6 +31,17 @@ export function createHistoryStore() {
 				return { success: true };
 			} catch (e) {
 				return { success: false, error: e instanceof Error ? e.message : 'Failed to delete workout' };
+			}
+		},
+
+		async clearAll(): Promise<ServiceResult<number>> {
+			try {
+				const count = await historyService.clearHistory();
+				workouts = [];
+				expandedId = null;
+				return { success: true, data: count };
+			} catch (e) {
+				return { success: false, error: e instanceof Error ? e.message : 'Failed to clear history' };
 			}
 		}
 	};

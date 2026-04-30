@@ -33,4 +33,11 @@ describe('history.service', () => {
 		await service.deleteWorkout('w1');
 		expect(mockInvoke).toHaveBeenCalledWith('delete_workout', { id: 'w1' });
 	});
+
+	it('clearHistory invokes clear_all_history and returns count', async () => {
+		mockInvoke.mockResolvedValueOnce(3);
+		const result = await service.clearHistory();
+		expect(mockInvoke).toHaveBeenCalledWith('clear_all_history');
+		expect(result).toBe(3);
+	});
 });

@@ -8,3 +8,7 @@ export async function getWorkouts(): Promise<Workout[]> {
 export async function deleteWorkout(id: string): Promise<void> {
 	await invoke('delete_workout', { id });
 }
+
+export async function clearHistory(): Promise<number> {
+	return invoke<number>('clear_all_history');
+}

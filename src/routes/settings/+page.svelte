@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { settingsStore } from '$lib/features/settings/settingsStore.svelte.js';
+	import { historyStore } from '$lib/features/history/historyStore.svelte.js';
 	import { i18nStore } from '$lib/features/i18n/i18nStore.svelte.js';
 	import LanguageControl from '$lib/features/settings/components/LanguageControl.svelte';
+	import ClearHistoryControl from '$lib/features/settings/components/ClearHistoryControl.svelte';
 	import type { LanguagePreference } from '$lib/shared/types/settings.js';
 
 	function handleLanguageChange(next: LanguagePreference) {
@@ -11,6 +13,24 @@
 
 	function handleBack() {
 		history.length > 1 ? history.back() : goto('/');
+	}
+
+	let clearMessage = $state<string | null>(null);
+	let clearMessageTimer: ReturnType<typeof setTimeout> | null = null;
+
+	async function handleClearHistory() {
+		const result = await historyStore.clearAll();
+		if (clearMessageTimer) clearTimeout(clearMessageTimer);
+		if (result.success) {
+			clearMessage = result.data === 0
+				? i18nStore.t('settings.clearHistoryNone')
+				: i18nStore.t('settings.clearHistoryDeleted', { n: result.data });
+		} else {
+			clearMessage = result.error ?? i18nStore.t('settings.clearHistoryNone');
+		}
+		clearMessageTimer = setTimeout(() => {
+			clearMessage = null;
+		}, 3000);
 	}
 </script>
 
@@ -39,5 +59,21 @@
 			}}
 			onChange={handleLanguageChange}
 		/>
+	</section>
+
+	<section>
+		<ClearHistoryControl
+			labels={{
+				sectionHeading: i18nStore.t('settings.clearDataSection'),
+				buttonLabel: i18nStore.t('settings.clearHistoryButton'),
+				confirmTitle: i18nStore.t('settings.clearHistoryConfirmTitle'),
+				confirmLabel: i18nStore.t('confirm.confirm'),
+				cancelLabel: i18nStore.t('confirm.cancel')
+			}}
+			onClear={handleClearHistory}
+		/>
+		{#if clearMessage}
+			<p role="status" class="mt-2 text-sm text-zinc-400">{clearMessage}</p>
+		{/if}
 	</section>
 </div>

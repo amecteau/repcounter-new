@@ -52,3 +52,9 @@ pub fn delete_workout(db: State<DbConn>, id: String) -> Result<(), String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     workout_repo::delete_workout(&conn, &id).map_err(|e| e.to_string())
 }
+
+#[tauri::command]
+pub fn clear_all_history(db: State<DbConn>) -> Result<u32, String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+    workout_repo::clear_all_history(&conn).map_err(|e| e.to_string())
+}

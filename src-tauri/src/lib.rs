@@ -40,6 +40,7 @@ pub fn run() {
             commands::workout::get_incomplete_workout,
             commands::workout::delete_set,
             commands::workout::delete_workout,
+            commands::workout::clear_all_history,
             commands::exercise::save_custom_exercise,
             commands::exercise::get_custom_exercises,
             commands::exercise::delete_custom_exercise,

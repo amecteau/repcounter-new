@@ -24,7 +24,7 @@ After history is cleared, all custom exercises become unreferenced and can be de
 
 ## Current State
 
-**Current phase**: ⬜ CH.1 — Not started. Plan complete (2026-04-29).
+**Current phase**: ✅ Complete (2026-04-29).
 
 ---
 
@@ -55,37 +55,37 @@ After history is cleared, all custom exercises become unreferenced and can be de
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| CH.1.1 | Add `clear_all_history(conn) -> Result<u32, String>` to `workout_repo.rs`. In a transaction: read workout count via `SELECT COUNT(*) FROM workouts`, DELETE FROM sets, DELETE FROM workouts, return count | ⬜ | |
-| CH.1.2 | Thin Tauri command `clear_all_history` in `commands/workout.rs`; register in `lib.rs` | ⬜ | |
-| CH.1.3 | Rust tests: (a) empty DB → returns 0; (b) 2 workouts with sets → both deleted, sets gone, count=2; (c) after clear, `get_workouts` returns empty | ⬜ | |
+| CH.1.1 | Add `clear_all_history(conn) -> Result<u32, String>` to `workout_repo.rs`. In a transaction: read workout count via `SELECT COUNT(*) FROM workouts`, DELETE FROM sets, DELETE FROM workouts, return count | ✅ | |
+| CH.1.2 | Thin Tauri command `clear_all_history` in `commands/workout.rs`; register in `lib.rs` | ✅ | |
+| CH.1.3 | Rust tests: (a) empty DB → returns 0; (b) 2 workouts with sets → both deleted, sets gone, count=2; (c) after clear, `get_workouts` returns empty | ✅ | |
 
 ### CH.2 — Frontend: service + store
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| CH.2.1 | `clearHistory(): Promise<ServiceResult<number>>` in `history.service.ts`; add service test | ⬜ | |
-| CH.2.2 | `clearAll(): Promise<ServiceResult<number>>` in `historyStore` — calls service; on `ok: true` sets local workouts to `[]`; returns result with count | ⬜ | |
-| CH.2.3 | historyStore tests: success path empties local workouts and returns count; failure path leaves existing workouts unchanged | ⬜ | |
+| CH.2.1 | `clearHistory(): Promise<ServiceResult<number>>` in `history.service.ts`; add service test | ✅ | Service returns `Promise<number>`; store wraps in try/catch returning `ServiceResult<number>` |
+| CH.2.2 | `clearAll(): Promise<ServiceResult<number>>` in `historyStore` — calls service; on `ok: true` sets local workouts to `[]`; returns result with count | ✅ | |
+| CH.2.3 | historyStore tests: success path empties local workouts and returns count; failure path leaves existing workouts unchanged | ✅ | |
 
 ### CH.3 — i18n: new translation keys
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| CH.3.1 | Add to `locales/en.ts` and `locales/es.ts`: `settings.clearDataSection` (skip if already added by CE.3.1), `settings.clearHistoryButton`, `settings.clearHistoryConfirmTitle`, `settings.clearHistoryConfirmBody`, `settings.clearHistoryDeleted` (uses `{n}` placeholder), `settings.clearHistoryNone` | ⬜ | |
+| CH.3.1 | Add to `locales/en.ts` and `locales/es.ts`: `settings.clearDataSection` (skip if already added by CE.3.1), `settings.clearHistoryButton`, `settings.clearHistoryConfirmTitle`, `settings.clearHistoryConfirmBody`, `settings.clearHistoryDeleted` (uses `{n}` placeholder), `settings.clearHistoryNone` | ✅ | All 6 keys added. `confirmBody` key added to locales but not used by component (ConfirmDialog has single `message` field) |
 
 ### CH.4 — UI: component + settings page
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| CH.4.1 | `ClearHistoryControl.svelte` in `settings/components/`: receives `labels` prop, renders a danger-styled button; tapping opens `ConfirmDialog`; on confirm fires `onClear()` callback; no store imports | ⬜ | |
-| CH.4.2 | Wire into `/settings/+page.svelte`: import `historyStore`, build `labels` from `t()`, call `historyStore.clearAll()` on confirm, show inline 3s-autodismiss message ("2 workouts deleted" or "Nothing to clear") below the button | ⬜ | |
-| CH.4.3 | `ClearHistoryControl.test.ts`: button renders with correct label; clicking button opens dialog; clicking cancel dismisses without firing `onClear`; clicking confirm fires `onClear`; Spanish labels render correctly | ⬜ | |
+| CH.4.1 | `ClearHistoryControl.svelte` in `settings/components/`: receives `labels` prop, renders a danger-styled button; tapping opens `ConfirmDialog`; on confirm fires `onClear()` callback; no store imports | ✅ | |
+| CH.4.2 | Wire into `/settings/+page.svelte`: import `historyStore`, build `labels` from `t()`, call `historyStore.clearAll()` on confirm, show inline 3s-autodismiss message ("2 workouts deleted" or "Nothing to clear") below the button | ✅ | |
+| CH.4.3 | `ClearHistoryControl.test.ts`: button renders with correct label; clicking button opens dialog; clicking cancel dismisses without firing `onClear`; clicking confirm fires `onClear`; Spanish labels render correctly | ✅ | |
 
 ### CH.5 — Sensor pass
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| CH.5.1 | `npx svelte-check`, `npx eslint src/`, `npx vitest run`, `cargo check && cargo test && cargo clippy` — all pass | ⬜ | |
+| CH.5.1 | `npx svelte-check`, `npx eslint src/`, `npx vitest run`, `cargo check && cargo test && cargo clippy` — all pass | ✅ | 0 errors, 253/253 vitest, 32/32 cargo tests, clippy clean |
 
 ---
 

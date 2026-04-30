@@ -134,6 +134,12 @@ export const es: Dictionary = {
 	'settings.weightUnit.lb': 'Libras (lb)',
 	'settings.about.heading': 'Acerca de',
 	'settings.about.version': 'SetForge v{version}',
+	'settings.clearDataSection': 'Borrar datos',
+	'settings.clearHistoryButton': 'Borrar historial',
+	'settings.clearHistoryConfirmTitle': '¿Borrar todo el historial de entrenamiento?',
+	'settings.clearHistoryConfirmBody': 'Esto eliminará permanentemente todos los entrenamientos registrados y no se puede deshacer.',
+	'settings.clearHistoryDeleted': '{n} entrenamientos eliminados',
+	'settings.clearHistoryNone': 'Nada que borrar',
 
 	// Confirm dialog
 	'confirm.confirm': 'Confirmar',

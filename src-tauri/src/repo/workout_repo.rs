@@ -135,6 +135,13 @@ pub fn delete_workout(conn: &Connection, id: &str) -> Result<()> {
     Ok(())
 }
 
+pub fn clear_all_history(conn: &Connection) -> Result<u32> {
+    let count: u32 = conn.query_row("SELECT COUNT(*) FROM workouts", [], |r| r.get(0))?;
+    conn.execute("DELETE FROM sets", [])?;
+    conn.execute("DELETE FROM workouts", [])?;
+    Ok(count)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -242,6 +249,41 @@ mod tests {
             .query_row("SELECT COUNT(*) FROM sets", [], |r| r.get(0))
             .expect("count");
         assert_eq!(set_count, 0);
+    }
+
+    #[test]
+    fn clear_all_history_empty_db_returns_zero() {
+        let conn = setup();
+        let count = clear_all_history(&conn).expect("clear");
+        assert_eq!(count, 0);
+    }
+
+    #[test]
+    fn clear_all_history_deletes_workouts_and_sets() {
+        let conn = setup();
+        save_workout(&conn, "w1", "2026-04-10").expect("save w1");
+        save_set(&conn, "w1", &make_set("s1", "squat")).expect("save s1");
+        finish_workout(&conn, "w1", 30).expect("finish w1");
+        save_workout(&conn, "w2", "2026-04-11").expect("save w2");
+        save_set(&conn, "w2", &make_set("s2", "bench-press")).expect("save s2");
+        finish_workout(&conn, "w2", 45).expect("finish w2");
+
+        let count = clear_all_history(&conn).expect("clear");
+        assert_eq!(count, 2);
+
+        let set_count: i64 =
+            conn.query_row("SELECT COUNT(*) FROM sets", [], |r| r.get(0)).expect("count sets");
+        assert_eq!(set_count, 0);
+    }
+
+    #[test]
+    fn clear_all_history_get_workouts_returns_empty() {
+        let conn = setup();
+        save_workout(&conn, "w1", "2026-04-10").expect("save");
+        finish_workout(&conn, "w1", 20).expect("finish");
+        clear_all_history(&conn).expect("clear");
+        let workouts = get_workouts(&conn).expect("get");
+        assert!(workouts.is_empty());
     }
 
     #[test]

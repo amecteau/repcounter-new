@@ -351,7 +351,7 @@ const MIGRATIONS: &[(u32, &str)] = &[
 | Feature | Status file | Current state |
 |---|---|---|
 | Multi-language support (English + Spanish) | [features/multilanguage-status.md](features/multilanguage-status.md) | ✅ Complete (ML.1–ML.6) |
-| Clear History | [features/clear-history-status.md](features/clear-history-status.md) | ⬜ Not started |
+| Clear History | [features/clear-history-status.md](features/clear-history-status.md) | ✅ Complete (CH.1–CH.5) |
 | Clear Custom Exercises | [features/clear-exercises-status.md](features/clear-exercises-status.md) | ⬜ Not started |
 | Light / Dark Mode | [features/theme-status.md](features/theme-status.md) | ⬜ Not started |
 | Export History (CSV) | [features/export-history-status.md](features/export-history-status.md) | ⬜ Not started |

@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('./history.service.js', () => ({
 	getWorkouts: vi.fn().mockResolvedValue([]),
-	deleteWorkout: vi.fn().mockResolvedValue(undefined)
+	deleteWorkout: vi.fn().mockResolvedValue(undefined),
+	clearHistory: vi.fn().mockResolvedValue(0)
 }));
 
 import { createHistoryStore } from './historyStore.svelte.js';
@@ -105,5 +106,27 @@ describe('historyStore', () => {
 		const result = await store.deleteWorkout('w1');
 		expect(result).toEqual({ success: false, error: 'DB error' });
 		expect(store.workouts).toHaveLength(1);
+	});
+
+	it('clearAll empties workouts, clears expandedId, and returns count', async () => {
+		vi.mocked(historyService.getWorkouts).mockResolvedValueOnce([w1, w2]);
+		vi.mocked(historyService.clearHistory).mockResolvedValueOnce(2);
+		const store = createHistoryStore();
+		await store.load();
+		store.toggleExpand('w1');
+		const result = await store.clearAll();
+		expect(result).toEqual({ success: true, data: 2 });
+		expect(store.workouts).toHaveLength(0);
+		expect(store.expandedId).toBeNull();
+	});
+
+	it('clearAll does not mutate store and returns error when service throws', async () => {
+		vi.mocked(historyService.getWorkouts).mockResolvedValueOnce([w1, w2]);
+		vi.mocked(historyService.clearHistory).mockRejectedValueOnce(new Error('DB error'));
+		const store = createHistoryStore();
+		await store.load();
+		const result = await store.clearAll();
+		expect(result).toEqual({ success: false, error: 'DB error' });
+		expect(store.workouts).toHaveLength(2);
 	});
 });

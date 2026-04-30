@@ -132,6 +132,12 @@ export const en = {
 	'settings.weightUnit.lb': 'Pounds (lb)',
 	'settings.about.heading': 'About',
 	'settings.about.version': 'SetForge v{version}',
+	'settings.clearDataSection': 'Clear Data',
+	'settings.clearHistoryButton': 'Clear History',
+	'settings.clearHistoryConfirmTitle': 'Delete all workout history?',
+	'settings.clearHistoryConfirmBody': 'This will permanently delete all recorded workouts and cannot be undone.',
+	'settings.clearHistoryDeleted': '{n} workouts deleted',
+	'settings.clearHistoryNone': 'Nothing to clear',
 
 	// Confirm dialog
 	'confirm.confirm': 'Confirm',
