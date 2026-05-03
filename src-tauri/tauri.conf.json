@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "SetForge",
   "version": "1.0.0",
-  "identifier": "io.github.amecteau.setforge",
+  "identifier": "fitness.setforge.app",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:5173",
